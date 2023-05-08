@@ -1,0 +1,27 @@
+/*
+    Autores: Bertrand Bezerra, João Victor, Rodrigo Pereira
+    Parâmetros:
+        l <- Número de linhas de produção
+        t <- Lista de produtos (vértices)
+        s <- Matriz de tempos de manutenção (adjacências)
+    Descrição: Pseudocódigo da heurística de construção para
+    o problema de alocação de produtos entre linhas de produção.
+*/
+
+function BB_JV_RP(l, t, s)
+    linhas <- linha[l]
+    for linha in linhas:
+        linha.produtos[PRIMEIRO] = t.maior()
+        t.remover(t.maior())
+    
+    while t not empty:
+        menorLinha <- menor(linhas)
+        ultimoProduto <- linhas[menorLinha].produtos.ultimo()
+        menorSoma = INFINITO
+        for i < t.tamanho:
+            if t[i] + s[ultimoProduto][i] < menorSoma:
+                produtoAdicionado = i
+                menorSoma = t[i] + s[ultimoProduto][i]
+        menorLinha.adicionar(produtoAdicionado)
+        t.remover(produtoAdicionado)
+        
