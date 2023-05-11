@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include "EDP.cpp"
 
 #define PATH "entrada.txt"
 
@@ -27,7 +28,7 @@ void lerEntrada(int& n_produtos, int& m_linhas, vector<int>& produtos, vector<ve
     for (size_t i = 0; i < n_produtos; i++) {
         entrada >> produtos[i];
     }
-    
+
     for (size_t i = 0; i < n_produtos; i++) {
         for (size_t j = 0; j < n_produtos; j++) {
             entrada >> matriz[i][j];
@@ -41,10 +42,18 @@ int main(int argc, char const *argv[]) {
     int n_produtos, m_linhas;
     vector<int> produtos;
     vector<vector<int>> matriz;
+    vector<Produto> prodBox;//matriz T para usar na ED
 
     lerEntrada(n_produtos, m_linhas, produtos, matriz);
 
-    
+    for(int i=0; i < n_produtos; i++){
+        prodBox.push_back(Produto (i,produtos[i], true));
+    }
+
+    EDP dados = EDP(n_produtos, m_linhas, &prodBox);
+
+    dados.guloso(&prodBox, &matriz);
+    dados.imprimeTudo();
 
     return 0;
 }
