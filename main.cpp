@@ -42,17 +42,17 @@ int main(int argc, char const *argv[]) {
     int n_produtos, m_linhas;
     vector<int> produtos;
     vector<vector<int>> matriz;
-    vector<Produto> prodBox;//matriz T para usar na ED
+    vector<Produto> matrizT;//matriz T para usar na ED
 
     lerEntrada(n_produtos, m_linhas, produtos, matriz);
 
     for(int i=0; i < n_produtos; i++){
-        prodBox.push_back(Produto (i,produtos[i], true));
+        matrizT.push_back(Produto (i,produtos[i], true));
     }
 
-    EDP dados = EDP(n_produtos, m_linhas, &prodBox);
+    EDP dados = EDP(n_produtos, m_linhas, &matrizT);
 
-    dados.guloso(&prodBox, &matriz);
+    dados.guloso(&matrizT, &matriz);
     dados.imprimeTudo();
 
     return 0;
