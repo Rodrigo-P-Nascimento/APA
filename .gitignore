@@ -3,3 +3,5 @@
 *.json
 *.exe
 *.exe
+main.exe
+main.o
