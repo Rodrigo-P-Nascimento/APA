@@ -13,10 +13,9 @@ function BB_JV_RP(l, t, s)
     for linha in linhas:
         linha.produtos[PRIMEIRO] = t.maior()
         t.remover(t.maior())
-    
     while t not empty:
         menorLinha <- menor(linhas)
-        ultimoProduto <- linhas[menorLinha].produtos.ultimo()
+        ultimoProduto <- menorLinha.produtos.ultimo()
         menorSoma = INFINITO
         for i < t.tamanho:
             if t[i] + s[ultimoProduto][i] < menorSoma:
@@ -24,4 +23,5 @@ function BB_JV_RP(l, t, s)
                 menorSoma = t[i] + s[ultimoProduto][i]
         menorLinha.adicionar(produtoAdicionado)
         t.remover(produtoAdicionado)
+    return linhas
         
