@@ -17,13 +17,13 @@ private:
     vector<vector<Produto>> estrutura; //isso representa cada linha de produção e os seus produtos
         //estrutura[0][i] linha de produção 1 -> com um vector que guarda os seus j produtos
     vector<int> valorPorLinha; //cada linha[j] tem um valor de tempo X, e esse vector guarda esses valores
-    vector<int> produtoAdicionado; //se tiver 0 o produto[j] foi adicionado na linha[x], se 1 o produto[j] ainda não foi adicionado
+    vector<int> produtosAdicionados; //se tiver 0 o produto[j] foi adicionado na linha[x], se 1 o produto[j] ainda não foi adicionado
     
 public:
     EDP(int n, int m);
-    void guloso(vector<Produto>* custoTempo, vector<vector<int>>* matriz);
+    void guloso(vector<Produto>* produtos, vector<vector<int>>* matriz);
     int somaLinha(int l, vector<vector<int>>* matriz);
-    void imprimeTudo();
+    void imprimirTudo();
     ~EDP();
 };
 

@@ -13,9 +13,9 @@ using namespace std;
 class Produto{
 
 public:
-    int ind;//ind  = indice UNICO do produto
-    int temp;//temp = tempo de produção do produto
-    bool disp;// disp = disponibilidade do produto
+    int indice;//ind  = indice UNICO do produto
+    int tempo;//temp = tempo de produção do produto
+    bool foiAdicionado;// disp = disponibilidade do produto
 
     Produto(int indice, int tempo, bool disponibilidade);
     ~Produto();

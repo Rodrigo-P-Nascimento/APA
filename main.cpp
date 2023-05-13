@@ -53,7 +53,7 @@ int main(int argc, char const *argv[]) {
     EDP dados = EDP(n_produtos, m_linhas);
 
     dados.guloso(&matrizT, &matriz);
-    dados.imprimeTudo();
+    dados.imprimirTudo();
 
     return 0;
 }
