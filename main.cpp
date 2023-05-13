@@ -50,7 +50,7 @@ int main(int argc, char const *argv[]) {
         matrizT.push_back(Produto (i,produtos[i], true));
     }
 
-    EDP dados = EDP(n_produtos, m_linhas, &matrizT);
+    EDP dados = EDP(n_produtos, m_linhas);
 
     dados.guloso(&matrizT, &matriz);
     dados.imprimeTudo();

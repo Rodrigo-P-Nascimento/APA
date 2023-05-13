@@ -20,7 +20,7 @@ private:
     vector<int> produtoAdicionado; //se tiver 0 o produto[j] foi adicionado na linha[x], se 1 o produto[j] ainda não foi adicionado
     
 public:
-    EDP(int n, int m, vector<Produto>* custoTempo);
+    EDP(int n, int m);
     void guloso(vector<Produto>* custoTempo, vector<vector<int>>* matriz);
     int somaLinha(int l, vector<vector<int>>* matriz);
     void imprimeTudo();

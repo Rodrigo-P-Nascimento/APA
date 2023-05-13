@@ -4,7 +4,7 @@
 
 using namespace std;
 
-EDP::EDP(int n, int m, vector<Produto>* custoTempo){
+EDP::EDP(int n, int m){
 
     maiorValor=0;//valor de inicio 
     nProd = n;
