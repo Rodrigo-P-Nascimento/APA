@@ -1,8 +1,11 @@
 #ifndef EDP_H_
 #define EDP_H_
 
+#include <iostream>
 #include <vector>
-#include "Produto.cpp"
+#include <climits>
+#include "Produto.h"
+#include "Linha.h"
 
 using namespace std;
 
@@ -26,8 +29,5 @@ public:
     void imprimirTudo();
     ~EDP();
 };
-
-EDP::~EDP(){
-}
 
 #endif

@@ -1,20 +1,26 @@
-#include <iostream>
-#include <climits>
 #include "EDP.h"
 
-using namespace std;
+EDP::EDP(int n, int m, vector<Produto>* produtos, vector<vector<int>>* matriz){
 
-EDP::EDP(int n, int m){
-
-    maiorValor=0; //valor de inicio 
+    maiorValor = 0; //valor de inicio 
     nProd = n;
     mLinha = m;
-    valorPorLinha.resize(n, 0); //inicilializar o valor do tempo total de cada linha com 0
-    produtosAdicionados.resize(n, 1); //todos os produtos estão disponíveis
-    estrutura.resize(m); //iniciamos a estrutura com 0
+    produtosAdicionados.resize(n, false); //todos os produtos estão disponíveis
+    this->produtos = produtos;
+    matrizDeAdj = matriz;
+
+    for (size_t i = 0; i < mLinha; i++)
+    {
+        linhas_producao.push_back(Linha(matrizDeAdj));
+    }
 }
 
-void EDP::guloso(vector<Produto>* produtos, vector<vector<int>>* matrizDeAdj){
+EDP::~EDP()
+{
+
+}
+
+void EDP::guloso(){
 
     /*
         COMO FUNCIONA O NOSSO ALGORITMO GULOSO?
@@ -29,8 +35,8 @@ void EDP::guloso(vector<Produto>* produtos, vector<vector<int>>* matrizDeAdj){
     
     */
 
-    int maiorTempo = 0; //Ela guarda o maior custo de produção de um produto
-    int indiceDoMaior = 0; //Ela guarda o indice do produto que oferece maior custo
+    int maiorTempo; //Ela guarda o maior custo de produção de um produto
+    int indiceDoMaior; //Ela guarda o indice do produto que oferece maior custo
     int produtosRestantes = nProd;
 
     //Esse |for| abaixo, serve para colocar em todas as linhas o produto que consume mais tempo.
@@ -43,8 +49,8 @@ void EDP::guloso(vector<Produto>* produtos, vector<vector<int>>* matrizDeAdj){
         for(int j = 0; j < nProd; j++){
             //Avaliamos se o custo do produto é maior do qe o valor da variavel "maiorTempo" e se ele está disponivel
             //Se sim, atualizamos o valor de "maiorTempo" e salvamos o seu indice.
-            if(produtos->at(j).tempo > maiorTempo && produtosAdicionados[j] != 0){
-                maiorTempo = produtos->at(j).tempo;
+
+            if(produtos->at(j).tempo > maiorTempo && produtosAdicionados[j] == false){
                 indiceDoMaior = j;
             }
         }
@@ -54,13 +60,12 @@ void EDP::guloso(vector<Produto>* produtos, vector<vector<int>>* matrizDeAdj){
         Nos criamos um item do tipo Produto, com as informações do seu indice, referente ao seu ID unico do vector t de entrada e do seu custo de produção.
         */
 
-        estrutura[i].push_back(Produto(indiceDoMaior, maiorTempo, false));
-        valorPorLinha[i] = somaLinha(i, matrizDeAdj);//Atualizamos o valo total de cada linha[i]
-        produtosAdicionados[indiceDoMaior] = 0;//Para termos um controle de informações, setamos como 0 o valor referente ao indice do produto.
+        linhas_producao[i].push_Produto(&produtos->at(indiceDoMaior));
+        produtosAdicionados[indiceDoMaior] = true;
         produtosRestantes--;//Dimiunimos a quantidade de produtos disponiveis
     }
 
-    int valorMenorLinha = 0; //Essa variavel vai guardar qual o valor da menor linha dentre as m linhas possiveis da nossa estrutura
+    int valorMenorLinha = 0; //Essa variavel vai guardar qual o valor da menor linha dentre as m linhas possiveis da nossa linhas_producao
     int indiceMenorLinha = 0;//Guarda o indice da menor linha possivél
     int indiceUltimo = -1;//Guarda o indice do ulitmo produto da menor linha
     int indiceDaMenorTransicao = -1;//Guarda o indice do produto que oferece o custo de transisasao de produto[x] para o produto[y]
@@ -70,14 +75,10 @@ void EDP::guloso(vector<Produto>* produtos, vector<vector<int>>* matrizDeAdj){
     while (produtosRestantes){
         valorMenorLinha = INT_MAX; //Setamos essa variável como INFINITA
 
-        //Sempre atualizamos o valor das linhas para utilizar esses valores no proximos |for|
-        for(int i =0; i < mLinha; i++){
-            valorPorLinha[i] = somaLinha(i, matrizDeAdj);
-        }
         //Esse |for| pega o valor e o indice da menor linha dentre as m linhas possiveis
         for(int i=0; i < mLinha; i++){
-            if(valorPorLinha[i] <= valorMenorLinha){
-                valorMenorLinha = valorPorLinha[i];
+            if(linhas_producao[i].get_tempo_total() <= valorMenorLinha){
+                valorMenorLinha = linhas_producao[i].get_tempo_total();
                 indiceMenorLinha = i;
             }
         }
@@ -88,22 +89,21 @@ void EDP::guloso(vector<Produto>* produtos, vector<vector<int>>* matrizDeAdj){
         //colocar esse produto na linha x
         //refazer a soma total
         
-        indiceUltimo = estrutura[indiceMenorLinha].back().indice; //Pegamos o indice do ultimo produto da linha escolhida
+        //indiceUltimo = linhas_producao[indiceMenorLinha].back().indice; //Pegamos o indice do ultimo produto da linha escolhida
         indiceDaMenorTransicao = -1; //Sempre resetamos esse valor
         menorsoma = INT_MAX; //Setamos essa valor como INFINITO
 
         //Nesse |for| verificamos se ao pegarmos o custo de um produto[x] + o seu custo de transição, dado pela matriz, se esse custo é o menor custo dentre as nossa possibilidades entre os produtos ainda restantes.
         //Ao encontrar tal valor de soma, salvamos o indice do produto que oferece tal soma, e adiciomas ele na linha que tem o menor custo de produção
         for (int i=0; i < nProd; i++){
-            if((matrizDeAdj->at(indiceUltimo).at(i) + produtos->at(i).tempo < menorsoma) && produtosAdicionados[i] != 0){
+            if((matrizDeAdj->at(indiceUltimo).at(i) + produtos->at(i).tempo < menorsoma) && produtosAdicionados[i] == false){
                 indiceDaMenorTransicao = i;
                 menorsoma = matrizDeAdj->at(indiceUltimo).at(i) + produtos->at(i).tempo;
             }
         }
 
-        estrutura[indiceMenorLinha].push_back(Produto (indiceDaMenorTransicao, produtos->at(indiceDaMenorTransicao).tempo, false));
-        valorPorLinha[indiceMenorLinha] = somaLinha(indiceMenorLinha, matrizDeAdj);//atualizamos o valor de custo total da linha que recebeu um novo produto
-        produtosAdicionados[indiceDaMenorTransicao] = 0; //Já que um novo produto foi adicionado na linha, temos que marcar que ele já foi escolhido e não está mais disponível
+        linhas_producao[indiceMenorLinha].push_Produto(&produtos->at(indiceDaMenorTransicao));
+        produtosAdicionados[indiceDaMenorTransicao] = true; //Já que um novo produto foi adicionado na linha, temos que marcar que ele já foi escolhido e não está mais disponível
         produtosRestantes--; //Assim como também devemos dizer que a quantidade de produtos disponíveis foi diminuída em -1
     } 
 
@@ -115,33 +115,8 @@ void EDP::imprimirTudo(){
 
     
     for(int i=0; i < mLinha; i++ ){
-        cout << "Elementos da Linha[" << i << "] = ";
-        for(size_t j = 0; j < estrutura[i].size(); j++){
-            cout << estrutura[i][j].tempo << " ";
-        }
-        cout << "| valor da linha[" << i << "]: " << valorPorLinha[i];
+        cout << "Elementos da Linha[" << i << "] = " << linhas_producao[i].get_produtos();
+        cout << "| valor da linha[" << i << "]: " << linhas_producao[i].get_tempo_total();
         cout << "\n" ;
     }
-    
-}
-
-int EDP::somaLinha(int l, vector<vector<int>>* matrix){
-    int soma=0;
-
-    for(int i=0; i < estrutura[l].size(); i++){
-        soma = soma + estrutura[l][i].tempo;
-
-        //Esse |if| serve pra anailizarmos o seguinte se tiver um produto posterior ao atual então devmos somar o valor da transicação
-        //Caso i atual seja exatamente o ultimo ele não funciona, já que temos valor de transicação para o ultimo produto.
-        if(i < (estrutura[l].size()-1)){
-            soma = soma + matrix->at(estrutura[l][i].indice).at(estrutura[l][i+1].indice);
-        }
-    }
-
-    //Para atualizarmos o valor do maiorValor a cada chamada dessa função
-    if(soma > maiorValor){
-        maiorValor = soma;
-    }
-
-    return soma;
 }
