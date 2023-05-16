@@ -88,9 +88,9 @@ void EDP::guloso(){
         //Nesse |for| verificamos se ao pegarmos o custo de um produto[x] + o seu custo de transição, dado pela matriz, se esse custo é o menor custo dentre as nossa possibilidades entre os produtos ainda restantes.
         //Ao encontrar tal valor de soma, salvamos o indice do produto que oferece tal soma, e adiciomas ele na linha que tem o menor custo de produção
         for (int i=0; i < nProd; i++){
-            if((linhas_producao.at(i).get_tempo_parcial(&produtos->at(i)) < menorsoma) && produtosAdicionados[i] == false){
+            if((linhas_producao.at(indiceMenorLinha).get_tempo_parcial(&produtos->at(i)) < menorsoma) && produtosAdicionados[i] == false){
                 indiceDaMenorTransicao = i;
-                menorsoma = linhas_producao.at(i).get_tempo_parcial(&produtos->at(i));
+                menorsoma = linhas_producao.at(indiceMenorLinha).get_tempo_parcial(&produtos->at(i));
             }
         }
 
