@@ -67,7 +67,6 @@ void EDP::guloso(){
 
     int valorMenorLinha = 0; //Essa variavel vai guardar qual o valor da menor linha dentre as m linhas possiveis da nossa linhas_producao
     int indiceMenorLinha = 0;//Guarda o indice da menor linha possivél
-    int indiceUltimo = -1;//Guarda o indice do ulitmo produto da menor linha
     int indiceDaMenorTransicao = -1;//Guarda o indice do produto que oferece o custo de transisasao de produto[x] para o produto[y]
     int menorsoma = 0;//Guarda o valor da menor soma de custo + transição
 
@@ -82,14 +81,7 @@ void EDP::guloso(){
                 indiceMenorLinha = i;
             }
         }
-        //pegar o indice da linha que contem o menor valor de tempo
-        //cout << "Indice da linha com o menor valor: " << indiceMenorLinha << endl;
-        //vamos pegar o ultimo produto dessa lista
-        //olhar na matriz com é o produto que tem o menor custo de transição
-        //colocar esse produto na linha x
-        //refazer a soma total
         
-        //indiceUltimo = linhas_producao[indiceMenorLinha].back().indice; //Pegamos o indice do ultimo produto da linha escolhida
         indiceDaMenorTransicao = -1; //Sempre resetamos esse valor
         menorsoma = INT_MAX; //Setamos essa valor como INFINITO
 
