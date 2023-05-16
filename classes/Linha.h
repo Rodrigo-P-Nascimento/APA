@@ -13,7 +13,7 @@ public:
     Linha(vector<vector<int>>* matriz_transicao);
     ~Linha();
     void push_Produto(Produto* item);
-    void pop_Produto();
+    Produto pop_Produto();
     int get_tempo_total();
     string get_produtos();
 

@@ -22,15 +22,18 @@ void Linha::push_Produto(Produto* item)
     tempo_total += item->tempo;
 }
 
-void Linha::pop_Produto()
+Produto Linha::pop_Produto()
 {
+    Produto ultimo = produtos_na_linha.back();
+
     if (produtos_na_linha.size() >= 2)      //se tiver mais de um item, remove o item e o tempo de transicao
-    {
+    {   
         Produto penultimo = produtos_na_linha[produtos_na_linha.size()-2];
-        tempo_total -= (*tempo_transicao)[penultimo.indice][produtos_na_linha.back().indice];
+        tempo_total -= (*tempo_transicao)[penultimo.indice][ultimo.indice];
     }
-    tempo_total -= produtos_na_linha.back().tempo;
+    tempo_total -= ultimo.tempo;
     produtos_na_linha.pop_back();
+    return ultimo;
 }
 
 int Linha::get_tempo_total()
