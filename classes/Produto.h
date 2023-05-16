@@ -1,5 +1,5 @@
-#ifndef Produto_H_
-#define Produto_H_
+#ifndef Produto_H
+#define Produto_H
 
 using namespace std;
 

@@ -16,6 +16,7 @@ public:
     Produto pop_Produto();
     int get_tempo_total();
     string get_produtos();
+    int get_tempo_parcial(Produto* produto_candidato);
 
 private:
     unsigned tempo_total;

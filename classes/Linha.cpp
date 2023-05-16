@@ -52,3 +52,11 @@ string Linha::get_produtos()
     }
     return linha;
 }
+
+int Linha::get_tempo_parcial(Produto* produto_candidato)
+{
+    if (produtos_na_linha.size() >= 2)
+        return (*tempo_transicao)[produtos_na_linha.back().indice][produto_candidato->indice] + produto_candidato->tempo;
+    else
+        return produto_candidato->tempo;
+}
