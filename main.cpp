@@ -4,7 +4,7 @@
 #include "EDP.cpp"
 #include "Linha.cpp"
 
-#define PATH "entrada.txt"
+#define PATH "./instancias/n10m2_A.txt"
 
 using namespace std;
 
