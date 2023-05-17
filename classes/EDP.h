@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <vector>
-#include <climits>
 #include "Produto.h"
 #include "Linha.h"
 
@@ -15,18 +14,18 @@ Essa classe serve como estrutura de dados, a sigla EDP significa Estrutra de Dad
 
 class EDP{
 private:
-    int nProd, mLinha;//nPRod é o numero de produtos, e mLinha é o numero de linhas de produçãoi
-    int maiorValor; //Guarda o maior valor em minutos da linha de produção que consumiu mais tempo
-    vector<vector<int>>* matrizDeAdj;
-    vector<Produto>* produtos;
-    vector<Linha> linhas_producao; //isso representa cada linha de produção e os seus produtos
-    vector<bool> produtosAdicionados; //se tiver 0 o produto[j] foi adicionado na linha[x], se 1 o produto[j] ainda não foi adicionado
+    int nProd;                          //numero de produtos
+    int mLinha;                         //numero de linhas de produção
+    int tempo_de_solucao;               //Guarda o tempo da linha de produção que consumiu mais tempo
+    vector<vector<int>>* matrizDeAdj;   //matriz do tempo de transferencia
+    vector<Produto>* produtos;          //vetor dos produtos a disposicao
+    vector<Linha> linhas_producao;      //isso representa cada linha de produção e os seus produtos
+    vector<bool> produtosAdicionados;   //se tiver 0 o produto[j] foi adicionado na linha[x], se 1 o produto[j] ainda não foi adicionado
     
 
 public:
     EDP(int n, int m, vector<Produto>* produtos, vector<vector<int>>* matriz);
     void guloso();
-    int somaLinha(int l, vector<vector<int>>* matriz);
     void imprimirTudo();
     ~EDP();
 };

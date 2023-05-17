@@ -15,7 +15,7 @@ class Produto{
 public:
     int indice;//ind  = indice UNICO do produto
     int tempo;//temp = tempo de produção do produto
-    bool foiAdicionado;// disp = disponibilidade do produto
+    bool disponivel;// disp = disponibilidade do produto
 
     Produto(int indice, int tempo, bool disponibilidade);
     ~Produto();
