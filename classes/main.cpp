@@ -3,7 +3,7 @@
 #include <vector>
 #include "EDP.h"
 
-#define PATH "/home/bertrand/APA/APA/auxiliar/entrada.txt"
+#define PATH "../auxiliar/instancias/n15m4_A.txt"
 
 using namespace std;
 
