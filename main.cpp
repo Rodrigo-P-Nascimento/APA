@@ -4,7 +4,7 @@
 #include "EDP.cpp"
 #include "Linha.cpp"
 
-#define PATH "./instancias/n10m2_A.txt"
+#define PATH "./instancias/n29m4_B.txt"
 
 using namespace std;
 
@@ -157,7 +157,8 @@ void imprimirSolucao(vector<Linha>& linhas){
                 cout << " -> ";
             }
         }
-        if (linhas.at(i).custo > maiorCustoDeLinha){
+        if (linhas.at(i).custo >= maiorCustoDeLinha){
+            maiorCustoDeLinha = linhas.at(i).custo;
             indiceMaiorLinha = i;
         }
         cout << " | Custo = " << linhas.at(i).custo << endl;
