@@ -1,6 +1,5 @@
 #ifndef LINHA_H
 #define LINHA_H
-
 #include "Produto.h"
 #include <vector>
 #include <string>
@@ -22,7 +21,6 @@ private:
     unsigned tempo_total;
     vector<vector<int>>* tempo_transicao;
     vector<Produto> produtos_na_linha;
-
 };
 
 #endif
