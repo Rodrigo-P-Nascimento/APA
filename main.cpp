@@ -158,6 +158,7 @@ void imprimirSolucao(vector<Linha>& linhas){
             }
         }
         if (linhas.at(i).custo > maiorCustoDeLinha){
+            maiorCustoDeLinha = linhas.at(i).custo;
             indiceMaiorLinha = i;
         }
         cout << " | Custo = " << linhas.at(i).custo << endl;
