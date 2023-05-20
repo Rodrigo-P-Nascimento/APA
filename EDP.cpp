@@ -58,7 +58,7 @@ void EDP::guloso(){
         Nos criamos um item do tipo Produto, com as informações do seu indice, referente ao seu ID unico do vector t de entrada e do seu custo de produção.
         */
 
-        linhas_producao.at(i).push_Produto(&produtos->at(indiceDoMaior));
+        linhas_producao.at(i).pushProduto(&produtos->at(indiceDoMaior));
         produtos->at(indiceDoMaior).disponivel = false;
         produtosRestantes--;//Dimiunimos a quantidade de produtos disponiveis
     }
@@ -74,8 +74,8 @@ void EDP::guloso(){
 
         //Esse |for| pega o valor e o indice da menor linha dentre as m linhas possiveis
         for(int i=0; i < mLinha; i++){
-            if(linhas_producao[i].get_tempo_total() <= valorMenorLinha){
-                valorMenorLinha = linhas_producao[i].get_tempo_total();
+            if(linhas_producao[i].getTempoTotal() <= valorMenorLinha){
+                valorMenorLinha = linhas_producao[i].getTempoTotal();
                 indiceMenorLinha = i;
             }
         }
@@ -86,21 +86,21 @@ void EDP::guloso(){
         //Nesse |for| verificamos se ao pegarmos o custo de um produto[x] + o seu custo de transição, dado pela matriz, se esse custo é o menor custo dentre as nossa possibilidades entre os produtos ainda restantes.
         //Ao encontrar tal valor de soma, salvamos o indice do produto que oferece tal soma, e adiciomas ele na linha que tem o menor custo de produção
         for (int i=0; i < nProd; i++){
-            if((linhas_producao.at(indiceMenorLinha).get_tempo_parcial(&produtos->at(i)) < menorsoma) && produtos->at(i).disponivel){
+            if((linhas_producao.at(indiceMenorLinha).getTempoParcial(&produtos->at(i)) < menorsoma) && produtos->at(i).disponivel){
                 indiceDaMenorTransicao = i;
-                menorsoma = linhas_producao.at(indiceMenorLinha).get_tempo_parcial(&produtos->at(i));
+                menorsoma = linhas_producao.at(indiceMenorLinha).getTempoParcial(&produtos->at(i));
             }
         }
 
-        linhas_producao[indiceMenorLinha].push_Produto(&produtos->at(indiceDaMenorTransicao));
+        linhas_producao[indiceMenorLinha].pushProduto(&produtos->at(indiceDaMenorTransicao));
         produtos->at(indiceDaMenorTransicao).disponivel = false; //Já que um novo produto foi adicionado na linha, temos que marcar que ele já foi escolhido e não está mais disponível
         produtosRestantes--; //Assim como também devemos dizer que a quantidade de produtos disponíveis foi diminuída em -1
     } 
 
     for (size_t i = 0; i < mLinha; i++)     //busca nas linhas de producao o maior tempo total
     {
-        if(linhas_producao.at(i).get_tempo_total() > tempo_de_solucao)
-            tempo_de_solucao = linhas_producao.at(i).get_tempo_total();
+        if(linhas_producao.at(i).getTempoTotal() > tempo_de_solucao)
+            tempo_de_solucao = linhas_producao.at(i).getTempoTotal();
     }
     
 }
@@ -110,8 +110,8 @@ void EDP::imprimirTudo(){
     cout << "Estrutura de Dados" << endl;
     
     for(int i=0; i < mLinha; i++ ){
-        cout << "Elementos da Linha[" << i << "] = " << linhas_producao[i].get_produtos();
-        cout << "| valor da linha[" << i << "]: " << linhas_producao[i].get_tempo_total();
+        cout << "Elementos da Linha[" << i << "] = " << linhas_producao[i].getProdutos();
+        cout << "| valor da linha[" << i << "]: " << linhas_producao[i].getTempoTotal();
         cout << "\n" ;
     }
 }

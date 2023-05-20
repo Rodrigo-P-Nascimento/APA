@@ -9,18 +9,19 @@
 class Linha
 {
 public:
-    Linha(vector<vector<int>>* matriz_transicao);
+    Linha(vector<vector<int>>* matrizDeAdj);
     ~Linha();
-    void push_Produto(Produto* item);
-    Produto* pop_Produto();
-    int get_tempo_total();
-    string get_produtos();                              //retorna uma string com os produtos da linha
-    int get_tempo_parcial(Produto* produto_candidato);  //retorna o tempo a ser somado a linha caso adicionado o produto_candidato
+
+    void pushProduto(Produto* item);
+    Produto* popProduto();
+    int getTempoTotal();
+    string getProdutos(); // Retorna uma string com os produtos da linha
+    int getTempoParcial(Produto* produtoCandidato); // Retorna o tempo a ser somado a linha caso adicionado o produtoCandidato
+    vector<Produto> produtos;
 
 private:
-    unsigned tempo_total;
-    vector<vector<int>>* tempo_transicao;
-    vector<Produto> produtos_na_linha;
+    unsigned tempoTotal;
+    vector<vector<int>>* matrizDeAdj;
 };
 
 #endif

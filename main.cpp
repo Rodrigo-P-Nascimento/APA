@@ -2,9 +2,10 @@
 #include <fstream>
 #include <vector>
 #include "EDP.cpp"
-#include "Linha.cpp"
+#include "Linha.h"
+#include <climits>
 
-#define PATH "./instancias/n10m2_A.txt"
+#define PATH "./auxiliar/instancias/n15m4_A.txt"
 
 using namespace std;
 
@@ -17,7 +18,7 @@ using namespace std;
  * 
  * matriz s
 */
-void lerEntrada(int& n_produtos, int& m_linhas, vector<int>& produtos, vector<vector<int>>& matriz) {
+void lerEntrada(int& nProdutos, int& mLinhas, vector<int>& produtos, vector<vector<int>>& matrizDeAdj) {
     ifstream entrada(PATH);
 
     if (!entrada.is_open()) {
@@ -25,23 +26,23 @@ void lerEntrada(int& n_produtos, int& m_linhas, vector<int>& produtos, vector<ve
         return;
     }
 
-    entrada >> m_linhas;
-    entrada >> n_produtos;
+    entrada >> mLinhas;
+    entrada >> nProdutos;
 
-    tempo_produto.resize(n_produtos);
+    produtos.resize(nProdutos);
 
-    matriz_transicao.resize(n_produtos);
-    for (int i = 0; i < n_produtos; i++) {
-        matriz_transicao[i].resize(n_produtos);
+    matrizDeAdj.resize(nProdutos);
+    for (int i = 0; i < nProdutos; i++) {
+        matrizDeAdj[i].resize(nProdutos);
     }
 
-    for (size_t i = 0; i < n_produtos; i++) {
-        entrada >> tempo_produto[i];
+    for (size_t i = 0; i < nProdutos; i++) {
+        entrada >> produtos[i];
     }
 
-    for (size_t i = 0; i < n_produtos; i++) {
-        for (size_t j = 0; j < n_produtos; j++) {
-            entrada >> matriz_transicao[i][j];
+    for (size_t i = 0; i < nProdutos; i++) {
+        for (size_t j = 0; j < nProdutos; j++) {
+            entrada >> matrizDeAdj[i][j];
         }
     }
 
@@ -57,7 +58,7 @@ int maiorProduto(vector<Produto> produtos){
     int maiorCustoEncontrado = 0;
     for (int j = 0; j < produtos.size(); j++){
         Produto produtoAtual = produtos.at(j);
-        if (produtoAtual.tempo > maiorCustoEncontrado && !produtoAtual.foiAdicionado){
+        if (produtoAtual.tempo > maiorCustoEncontrado && produtoAtual.disponivel){
             maiorCustoEncontrado = produtoAtual.tempo;
             indiceDoMaiorProduto = j;
         }
@@ -66,46 +67,43 @@ int maiorProduto(vector<Produto> produtos){
 }
 
 /**
- * Retorna o índice da linha menos custosa em relação
+ * Retorna uma referência do objeto da linha menos custosa em relação
  * ao tempo de produção, dada uma lista (vector) de linhas
  * de produção
 */
-int menorLinha(vector<Linha> linhas){
+Linha& menorLinhaDeTodas(vector<Linha>& linhas){
     int menorCustoDeLinha = INT_MAX, indiceDaMenorLinha;
     for (int i = 0; i < linhas.size(); i++){
         Linha linhaAtual = linhas.at(i);
-        if (linhaAtual.custo < menorCustoDeLinha){
-            menorCustoDeLinha = linhaAtual.custo;
+        if (linhaAtual.getTempoTotal() < menorCustoDeLinha){
+            menorCustoDeLinha = linhaAtual.getTempoTotal();
             indiceDaMenorLinha = i;
         }
     }
-    return indiceDaMenorLinha;
+    return linhas.at(indiceDaMenorLinha);
 }
 
 /**
- * Grande heurística construtiva para o problema:
+ * Grande heurística construtiva, para o seguinte problema:
  * 
  * Alocação de produtos entre linhas de produção, que têm
  * tempo de manutenção diferentes entre cada produto.
  * 
- * Implementada como um algoritmo guloso
+ * Implementada como um algoritmo guloso.
 */
-vector<Linha> heuristicaConstrutiva(int nLinhas, vector<Produto>& produtos, vector<vector<int>>& matrizDeAdj){
-    int produtosRestantes = produtos.size(); // Número de produtos que não foram adicionados à solução
-    vector<Linha> linhas(nLinhas); // Estrutura de dados (floresta com matriz de adjacência) da solução vazia
+vector<Linha> heuristicaConstrutiva(int nLinhas, vector<Produto>& produtosOriginais, vector<vector<int>>& matrizDeAdj){
+    int produtosRestantes = produtosOriginais.size(); // Número de produtos que não foram adicionados à solução
+    vector<Linha> linhas(nLinhas, Linha(&matrizDeAdj)); // Estrutura de dados (floresta com matriz de adjacência) da solução vazia
     
-    // Adicionando o produto mais custoso disponível em cada linha
+    // Adicionando, em cada linha, o produto mais custoso disponível
     for (int i = 0; i < nLinhas; i++){
-        int indiceDoMaiorProduto = maiorProduto(produtos); // Recuperando o índice produto mais custoso não adicionado
-
-        produtos.at(indiceDoMaiorProduto).foiAdicionado = true; // Marcando o produto mais custoso como adicionado
-        linhas.at(i).produtos.push_back(produtos.at(indiceDoMaiorProduto)); // Adicionando o produto mais custoso a linha atual da solução
-        linhas.at(i).custo += produtos.at(indiceDoMaiorProduto).tempo; // Atualizando o custo total da linha atual
+        int indiceDoMaiorProduto = maiorProduto(produtosOriginais); // Recuperando o índice produto mais custoso não adicionado
+        linhas.at(i).pushProduto(&produtosOriginais.at(indiceDoMaiorProduto)); // Adicionando o maior produto a linha atual
         produtosRestantes--; // Decrementando o contador de produtos disponíveis
     }
 
-    int indiceUltimoProduto = -1; // Índice do último produto da menor linha
-    int indiceDaMelhorTransicao = -1; // Índice do produto que oferece o melhor custo de manutenção em relação ao último produto
+    //int ultimoProduto; // Índice do último produto da menor linha
+    int indiceDaMelhorTransicao; // Índice do produto que oferece o melhor custo de manutenção em relação ao último produto
     int menorSoma = 0; // Auxiliar para a menor soma: custo do produto + tempo de manutenção
 
     /**
@@ -113,9 +111,8 @@ vector<Linha> heuristicaConstrutiva(int nLinhas, vector<Produto>& produtos, vect
      * Adiciona todos os produtos restantes de acordo com o critério guloso desenvolvido
      */
     while (produtosRestantes){
-        int indiceMenorLinha = menorLinha(linhas); // Recuperando o índice da menor linha
-        Linha& menorLinha = linhas.at(indiceMenorLinha); // Salvando o objeto da menor linha, que é modificado posteriormente
-        indiceUltimoProduto = menorLinha.produtos.back().indice; // Recuperando o índice do último produto da menor linha
+        Linha& menorLinha = menorLinhaDeTodas(linhas); // Recuperando o objeto da menor linha, que é modificado posteriormente
+        Produto ultimoProduto = menorLinha.produtos.back(); // Recuperando o objeto do último produto da menor linha
         int menorSoma = INT_MAX; // Auxiliar para achar a menor soma: tempo + manutenção
 
         /**
@@ -123,23 +120,25 @@ vector<Linha> heuristicaConstrutiva(int nLinhas, vector<Produto>& produtos, vect
          * Faz isso percorrendo a linha da matriz de tempos de manutenção (matriz de adjacência)
          * correspondente ao último produto da menor linha.
         */
-        for (int i = 0; i < produtos.size(); i++){
-            Produto produtoAtual = produtos.at(i);
-            int tempoTransicaoAtual = matrizDeAdj.at(indiceUltimoProduto).at(i);
+        for (int i = 0; i < produtosOriginais.size(); i++){
+            Produto produtoAtual = produtosOriginais.at(i);
+            int tempoTransicaoAtual = matrizDeAdj.at(ultimoProduto.indice).at(i);
 
             /**
              * Critério guloso: salvar o índice do produto que resultaria no
              * menor custo para a soma do tempo de produção mais tempo de manutenção
              * em relação ao último da menor linha
              */
-            if (produtoAtual.tempo + tempoTransicaoAtual < menorSoma && !produtoAtual.foiAdicionado){
+            if (produtoAtual.tempo + tempoTransicaoAtual < menorSoma && produtoAtual.disponivel){
                 indiceDaMelhorTransicao = i;
                 menorSoma = produtoAtual.tempo + tempoTransicaoAtual;
             }
         }
-        produtos.at(indiceDaMelhorTransicao).foiAdicionado = true; // Marcando o produto como adicionado
-        menorLinha.produtos.push_back(produtos.at(indiceDaMelhorTransicao)); // Adicionando o produto à solução
-        menorLinha.custo += produtos.at(indiceDaMelhorTransicao).tempo + matrizDeAdj.at(indiceUltimoProduto).at(indiceDaMelhorTransicao); // Atualizando o custo total da linha atual
+        menorLinha.pushProduto(&produtosOriginais.at(indiceDaMelhorTransicao));
+
+        //produtosOriginais.at(indiceDaMelhorTransicao).foiAdicionado = true; // Marcando o produto como adicionado
+        //menorLinha.produtos.push_back(produtosOriginais.at(indiceDaMelhorTransicao)); // Adicionando o produto à solução
+        //menorLinha.custo += produtosOriginais.at(indiceDaMelhorTransicao).tempo + matrizDeAdj.at(ultimoProduto).at(indiceDaMelhorTransicao); // Atualizando o custo total da linha atual
         produtosRestantes--; // Decrementando o contador de produtos disponíveis
     }
     return linhas; // Retornando os vértices da solução: um grafo desconexo, não simétrico e acíclico; em outras palavras, uma floresta que é implementada com uma matriz de adjacência
@@ -157,30 +156,30 @@ void imprimirSolucao(vector<Linha>& linhas){
                 cout << " -> ";
             }
         }
-        if (linhas.at(i).custo > maiorCustoDeLinha){
-            maiorCustoDeLinha = linhas.at(i).custo;
+        if (linhas.at(i).getTempoTotal() > maiorCustoDeLinha){
+            maiorCustoDeLinha = linhas.at(i).getTempoTotal();
             indiceMaiorLinha = i;
         }
-        cout << " | Custo = " << linhas.at(i).custo << endl;
+        cout << " | Custo = " << linhas.at(i).getTempoTotal() << endl;
     }
-    cout << "Custo da maior linha (funcao objetivo): " << linhas.at(indiceMaiorLinha).custo << endl;
+    cout << "Custo da maior linha (funcao objetivo): " << linhas.at(indiceMaiorLinha).getTempoTotal() << endl;
     cout << "\n";
 }
 
 int main(int argc, char const *argv[]) {
-    int n_produtos, m_linhas;
+    int nProdutos, mLinhas;
 /*
     vector<int> tempo_produto;
     vector<vector<int>> matriz_transicao;
     vector<Produto> produtos;
 
-    lerEntrada(n_produtos, m_linhas, tempo_produto, matriz_transicao);
+    lerEntrada(nProdutos, mLinhas, tempo_produto, matriz_transicao);
 
-    for(int i=0; i < n_produtos; i++){
+    for(int i=0; i < nProdutos; i++){
         produtos.push_back(Produto (i,tempo_produto[i], true));
     }
 
-    EDP dados = EDP(n_produtos, m_linhas, &produtos, &matriz_transicao);
+    EDP dados = EDP(nProdutos, mLinhas, &produtos, &matriz_transicao);
 
     dados.guloso();
     dados.imprimirTudo();*/
@@ -190,18 +189,18 @@ int main(int argc, char const *argv[]) {
     vector<Produto> produtos; // Lista com a abstração completa dos produtos
 
     // Lendo o arquivo de entrada
-    lerEntrada(n_produtos, m_linhas, temposDosProdutos, matrizDeAdj);
+    lerEntrada(nProdutos, mLinhas, temposDosProdutos, matrizDeAdj);
 
-    // Populando a lista de produtos com os tempos de produção correspondentes
-    for (int i = 0; i < n_produtos; i++){
-        produtos.push_back(Produto(i, temposDosProdutos[i], false));
+    // Populando a lista de objetos de produtos com os tempos de produção correspondentes
+    for (int i = 0; i < nProdutos; i++){
+        produtos.push_back(Produto(i, temposDosProdutos[i], true));
     }
 
-    //EDP dados = EDP(n_produtos, m_linhas);
-    vector<Linha> solucao = heuristicaConstrutiva(m_linhas, produtos, matrizDeAdj);
+    vector<Linha> solucao = heuristicaConstrutiva(mLinhas, produtos, matrizDeAdj);
     imprimirSolucao(solucao);
 
-    //dados.guloso(&produtos, &matriz);
+    EDP dados = EDP(nProdutos, mLinhas, &produtos, &matrizDeAdj);
+    //dados.guloso();
     //dados.imprimirTudo();
 
     return 0;

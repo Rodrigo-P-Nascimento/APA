@@ -1,10 +1,12 @@
 #ifndef EDP_H_
 #define EDP_H_
 
+#pragma once
+
 #include <iostream>
 #include <vector>
-#include "Produto.h"
-#include "Linha.h"
+#include "Produto.cpp"
+#include "Linha.cpp"
 
 using namespace std;
 

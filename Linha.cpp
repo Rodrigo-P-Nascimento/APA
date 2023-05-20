@@ -1,63 +1,65 @@
 #include "Linha.h"
 
-Linha::Linha(vector<vector<int>>* matriz_transicao)
+Linha::Linha(vector<vector<int>>* matrizDeAdj)
 {
-    tempo_transicao = matriz_transicao;
-    tempo_total = 0;
+    this->matrizDeAdj = matrizDeAdj;
+    this->tempoTotal = 0;
+    this->produtos.clear();
 }
 
 Linha::~Linha()
 {
-
+    this->tempoTotal = 0;
+    this->produtos.clear();
 }
 
-void Linha::push_Produto(Produto* item)
+void Linha::pushProduto(Produto* item)
 {
-    if (!produtos_na_linha.empty())     //se nao vazia, adiciona tambem o tempo de transicao
+    if (!produtos.empty())     //se nao vazia, adiciona tambem o tempo de transicao
     {
-        tempo_total += (*tempo_transicao)[produtos_na_linha.back().indice][item->indice];   //adiciona o tempo de transicao do ultimo produto para o proximo (item)
+        tempoTotal += (*matrizDeAdj)[produtos.back().indice][item->indice];   //adiciona o tempo de transicao do ultimo produto para o proximo (item)
     }
-    produtos_na_linha.push_back(*item);
+    produtos.push_back(*item);
     item->disponivel = false;
-    tempo_total += item->tempo;
+    tempoTotal += item->tempo;
 }
 
-Produto* Linha::pop_Produto()
+Produto* Linha::popProduto()
 {
-    Produto* ultimo = &produtos_na_linha.back();
+    Produto* ultimo = &produtos.back();
 
-    if (produtos_na_linha.size() >= 2)      //se tiver mais de um item, remove o item e o tempo de transicao
+    if (produtos.size() >= 2)      //se tiver mais de um item, remove o item e o tempo de transicao
     {   
-        Produto *penultimo = &produtos_na_linha[produtos_na_linha.size()-2];
-        tempo_total -= (*tempo_transicao)[penultimo->indice][ultimo->indice];
+        Produto *penultimo = &produtos[produtos.size()-2];
+        tempoTotal -= (*matrizDeAdj)[penultimo->indice][ultimo->indice];
     }
-    tempo_total -= ultimo->tempo;
+    tempoTotal -= ultimo->tempo;
     ultimo->disponivel = true;
-    produtos_na_linha.pop_back();
+    produtos.pop_back();
     return ultimo;
 }
 
-int Linha::get_tempo_total()
+int Linha::getTempoTotal()
 {
-    return tempo_total;
+    return tempoTotal;
 }
 
-string Linha::get_produtos()
+string Linha::getProdutos()
 {
     string linha = "";
 
-    for (size_t i = 0; i < produtos_na_linha.size(); i++)
+    for (size_t i = 0; i < produtos.size(); i++)
     {
-        linha += to_string(produtos_na_linha[i].tempo);
+        linha += to_string(produtos[i].tempo);
         linha += " ";
     }
     return linha;
 }
 
-int Linha::get_tempo_parcial(Produto* produto_candidato)
+int Linha::getTempoParcial(Produto* produtoCandidato)
 {
-    if (produtos_na_linha.size() > 0)   //se nao tiver vazia, calcula o tempo de transicao
-        return (*tempo_transicao)[produtos_na_linha.back().indice][produto_candidato->indice] + produto_candidato->tempo;
+    if (produtos.size() > 0)   //se nao tiver vazia, calcula o tempo de transicao
+        return (*matrizDeAdj)[produtos.back().indice][produtoCandidato->indice] + produtoCandidato->tempo;
     else
-        return produto_candidato->tempo;
+        return produtoCandidato->tempo;
 }

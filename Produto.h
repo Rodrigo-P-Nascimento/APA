@@ -1,6 +1,8 @@
 #ifndef Produto_H
 #define Produto_H
 
+#pragma once
+
 using namespace std;
 
 /*
@@ -13,9 +15,9 @@ using namespace std;
 class Produto{
 
 public:
-    int indice;//ind  = indice UNICO do produto
-    int tempo;//temp = tempo de produção do produto
-    bool disponivel;// disp = disponibilidade do produto
+    int indice; // indice  = indice UNICO do produto
+    int tempo; // tempo = tempo de produção do produto
+    bool disponivel; // disponivel = disponibilidade do produto (se pode ser adicionado a solução ou não)
 
     Produto(int indice, int tempo, bool disponibilidade);
     ~Produto();
