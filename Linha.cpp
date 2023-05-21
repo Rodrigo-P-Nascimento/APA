@@ -1,10 +1,11 @@
 #include "Linha.h"
 
-Linha::Linha(vector<vector<int>>* matrizDeAdj)
+Linha::Linha(vector<vector<int>>* matrizDeAdj, int indice)
 {
     this->matrizDeAdj = matrizDeAdj;
     this->tempoTotal = 0;
     this->produtos.clear();
+    this->indice = indice;
 }
 
 Linha::~Linha()
@@ -20,7 +21,7 @@ void Linha::pushProduto(Produto* item)
         tempoTotal += (*matrizDeAdj)[produtos.back().indice][item->indice];   //adiciona o tempo de transicao do ultimo produto para o proximo (item)
     }
     produtos.push_back(*item);
-    item->disponivel = false;
+    item->estado = indice;
     tempoTotal += item->tempo;
 }
 
@@ -34,7 +35,7 @@ Produto* Linha::popProduto()
         tempoTotal -= (*matrizDeAdj)[penultimo->indice][ultimo->indice];
     }
     tempoTotal -= ultimo->tempo;
-    ultimo->disponivel = true;
+    ultimo->estado = PRODUTO_DISPONIVEL;
     produtos.pop_back();
     return ultimo;
 }
@@ -44,28 +45,23 @@ int Linha::getTempoTotal()
     return tempoTotal;
 }
 
-string Linha::getProdutos()
+int Linha::getTempoParcial(unsigned indice) //retorna o tempo geral relativo ao produto, na posicao "indice" da linha, e suas transicoes
 {
-    string linha = "";
+    if (produtos.size()-1 >= indice)   //verifica se o elemento pertence ao vetor
+        return -1;
 
-    for (size_t i = 0; i < produtos.size(); i++)
-    {
-        linha += to_string(produtos[i].tempo);
-        linha += " ";
-    }
-    return linha;
+    int tempo = produtos.at(indice).tempo;
+
+    if (indice-1 >= 0)
+        tempo += TRANSICAO(indice-1, indice);
+    
+    if (indice+1 <= produtos.size()-1)
+        tempo += TRANSICAO(indice, indice+1);
+
+    return tempo;
 }
 
-int Linha::getTempoParcial(Produto* produtoCandidato)
-{
-    if (produtos.size() > 0)   //se nao tiver vazia, calcula o tempo de transicao
-        return (*matrizDeAdj)[produtos.back().indice][produtoCandidato->indice] + produtoCandidato->tempo;
-    else
-        return produtoCandidato->tempo;
-}
-
-//Esse metodo serve para recalcular o valor de uma linha se assim for desejado.
-void Linha::recalculaTempoTotal(){
+void Linha::recalculaTempoTotal(){ //Esse metodo serve para recalcular o valor de uma linha se assim for desejado.
     int soma = 0;
 
     for(int i = 0; i < produtos.size(); i++){
