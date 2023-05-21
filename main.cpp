@@ -200,29 +200,23 @@ void swap_2(vector<Linha>& solucao_inicial, unsigned indice_linha)
 }
 
 void imprimirSolucao(vector<Linha>& linhas){
-    int indiceMaiorLinha;
-    int maiorCustoDeLinha = 0;
     cout << "\n";
     for (int i = 0; i < linhas.size(); i++){
         cout << "Linha de producao " << i+1 << ": ";
-        /*
+        
         for (int j = 0; j < linhas.at(i).produtos.size(); j++){
             cout << "Produto " << linhas.at(i).produtos.at(j).indice+1;
             if (j < linhas.at(i).produtos.size()-1){
                 cout << " -> ";
             }
-        }*/
-        if (linhas.at(i).getTempoTotal() > maiorCustoDeLinha){
-            maiorCustoDeLinha = linhas.at(i).getTempoTotal();
-            indiceMaiorLinha = i;
         }
         cout << " | Custo = " << linhas.at(i).getTempoTotal() << endl;
     }
-    cout << "Custo da maior linha (funcao objetivo): " << linhas.at(indiceMaiorLinha).getTempoTotal() << endl;
+    cout << "Custo da maior linha (funcao objetivo): " << maiorLinhaDeTodas(linhas).getTempoTotal() << endl;
     cout << "\n";
 }
 
-Linha swap1(Linha LE, vector<vector<int>>& MSJ){
+Linha swap1(Linha LE){
 
     int novoValorF = LE.getTempoTotal();;
     int prodI = 0 , prodJ = 0;
@@ -265,7 +259,7 @@ Linha swap1(Linha LE, vector<vector<int>>& MSJ){
     return LE;
 }
 
-vector<Linha> VND(int numR, vector<Linha>& solucao, vector<vector<int>>& matrizDeAdj){
+vector<Linha> VND(int numR, vector<Linha>& solucao){
     
     vector<Linha> vndSolucao = solucao;//fazemos uma copia que vai ser retornada apos o fim do VND
     
@@ -286,10 +280,10 @@ vector<Linha> VND(int numR, vector<Linha>& solucao, vector<vector<int>>& matrizD
         }
 
         if(k == 1){//Se o k for igual a 1 temos que usar o SWAP1
-            soluF = swap1(maiorLinhaDeTodas(vndSolucao), matrizDeAdj);
+            soluF = swap1(maiorLinhaDeTodas(vndSolucao));
             cout << "\nSWAP1!" << endl;
         }else if(k == 2){
-            cout << "\nSWAP 1 Falhou! Agora seria a hora de usar o SWAP2!" << endl;
+            cout << "\nSWAP1 Falhou! Agora seria a hora de usar o SWAP2!" << endl;
         }
         cout << "\nSoluf: " << soluF.getTempoTotal() << " vs VND: " << vndSolucao.at(indiceMaiorLinha).getTempoTotal() << endl;
         if(soluF.getTempoTotal() < vndSolucao.at(indiceMaiorLinha).getTempoTotal()){
@@ -300,7 +294,6 @@ vector<Linha> VND(int numR, vector<Linha>& solucao, vector<vector<int>>& matrizD
             k += 1;
         }
     }
-
     return vndSolucao;
 }
 
@@ -311,10 +304,7 @@ int main(int argc, char const *argv[]) {
     vector<Linha> solucao = heuristicaConstrutiva();
     imprimirSolucao(solucao);
 
-    swap_2(solucao, 1);
-    imprimirSolucao(solucao);
-
-    vector<Linha> vndsolution = VND(2, solucao, matrizDeAdj);
+    vector<Linha> vndsolution = VND(2, solucao);
     imprimirSolucao(vndsolution);
 
     return 0;
