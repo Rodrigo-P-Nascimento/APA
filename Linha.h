@@ -13,6 +13,7 @@ public:
     ~Linha();
 
     void pushProduto(Produto* item);
+    void recalculaTempoTotal();//Se fizermos alguma coisa com os produtos esse metodo recalcula o valor de tempoTotal!
     Produto* popProduto();
     int getTempoTotal();
     string getProdutos(); // Retorna uma string com os produtos da linha

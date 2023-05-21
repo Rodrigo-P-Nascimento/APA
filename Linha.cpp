@@ -63,3 +63,18 @@ int Linha::getTempoParcial(Produto* produtoCandidato)
     else
         return produtoCandidato->tempo;
 }
+
+//Esse metodo serve para recalcular o valor de uma linha se assim for desejado.
+void Linha::recalculaTempoTotal(){
+    int soma = 0;
+
+    for(int i = 0; i < produtos.size(); i++){
+        soma = soma + produtos.at(i).tempo;
+
+        if(i < produtos.size() - 1){
+            soma = soma + matrizDeAdj->at(produtos.at(i).indice).at(produtos.at(i+1).indice);
+        }
+    }
+
+    tempoTotal = soma;
+}
