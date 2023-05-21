@@ -15,6 +15,7 @@ public:
     ~Linha();
 
     void pushProduto(Produto* item);
+    void recalculaTempoTotal();//Se fizermos alguma coisa com os produtos esse metodo recalcula o valor de tempoTotal!
     Produto* popProduto();
     int getTempoTotal();
     int getTempoParcial(unsigned produto_da_linha); // Retorna o tempo a ser somado a linha caso adicionado o produtoCandidato

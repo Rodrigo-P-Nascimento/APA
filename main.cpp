@@ -4,6 +4,7 @@
 #include "Linha.cpp"
 #include "Produto.cpp"
 #include <climits>
+#include <algorithm>
 
 #define PATH "./auxiliar/instancias/entrada.txt"
 
@@ -85,6 +86,23 @@ Linha& menorLinhaDeTodas(vector<Linha>& linhas){
         }
     }
     return linhas.at(indiceDaMenorLinha);
+}
+
+/**
+ * Retorna uma referência do objeto da linha mais custosa em relação
+ * ao tempo de produção, dada uma lista (vector) de linhas
+ * de produção
+*/
+Linha& maiorLinhaDeTodas(vector<Linha>& linhas){
+    int maiorCustoDeLinha = -1, indiceDaMaiorLinha;
+    for (int i = 0; i < linhas.size(); i++){
+        Linha linhaAtual = linhas.at(i);
+        if (linhaAtual.getTempoTotal() > maiorCustoDeLinha){
+            maiorCustoDeLinha = linhaAtual.getTempoTotal();
+            indiceDaMaiorLinha = i;
+        }
+    }
+    return linhas.at(indiceDaMaiorLinha);
 }
 
 /**
@@ -187,12 +205,13 @@ void imprimirSolucao(vector<Linha>& linhas){
     cout << "\n";
     for (int i = 0; i < linhas.size(); i++){
         cout << "Linha de producao " << i+1 << ": ";
+        /*
         for (int j = 0; j < linhas.at(i).produtos.size(); j++){
             cout << "Produto " << linhas.at(i).produtos.at(j).indice+1;
             if (j < linhas.at(i).produtos.size()-1){
                 cout << " -> ";
             }
-        }
+        }*/
         if (linhas.at(i).getTempoTotal() > maiorCustoDeLinha){
             maiorCustoDeLinha = linhas.at(i).getTempoTotal();
             indiceMaiorLinha = i;
@@ -201,6 +220,88 @@ void imprimirSolucao(vector<Linha>& linhas){
     }
     cout << "Custo da maior linha (funcao objetivo): " << linhas.at(indiceMaiorLinha).getTempoTotal() << endl;
     cout << "\n";
+}
+
+Linha swap1(Linha LE, vector<vector<int>>& MSJ){
+
+    int novoValorF = LE.getTempoTotal();;
+    int prodI = 0 , prodJ = 0;
+    
+    Linha teste = LE;
+    /*
+    cout << "Tempo total incial da linha antes do SWAP: " << novoValorF << endl;
+    cout << "Quantidade de produtos da linha: " << LE.produtos.size() << endl;
+
+    for(int i = 0; i < LE.produtos.size(); i++){
+        cout << "[" << i << "] = " << LE.produtos.at(i).indice << " " ; 
+    }
+
+    cout << "\n" ;
+    */
+    for(int i = 0 ; i < LE.produtos.size()-1; i++){
+        for(int j = i+1; j < LE.produtos.size(); j++){
+            teste = LE;
+            iter_swap(teste.produtos.begin() + i, teste.produtos.begin() + j);
+
+            /*for(int i = 0; i < teste.produtos.size(); i++){
+                cout << "[" << i << "] = " << teste.produtos.at(i).indice << " " ; 
+            }*/
+
+            teste.recalculaTempoTotal();
+
+            //cout << " Novo Valor do Teste[" << i <<"]: " << teste.getTempoTotal() << endl;
+
+            if(novoValorF > teste.getTempoTotal()){
+                prodI = i;
+                prodJ = j;
+                novoValorF = teste.getTempoTotal();
+            }
+        }
+    }
+    //cout << "\nTempo total final da linha depois do SWAP: " << novoValorF << endl;
+    iter_swap(LE.produtos.begin() + prodI, LE.produtos.begin() + prodJ);
+    LE.recalculaTempoTotal();
+
+    return LE;
+}
+
+vector<Linha> VND(int numR, vector<Linha>& solucao, vector<vector<int>>& matrizDeAdj){
+    
+    vector<Linha> vndSolucao = solucao;//fazemos uma copia que vai ser retornada apos o fim do VND
+    
+    int r = numR;
+    int k = 1;
+    int maiorLinha = -1;
+    int indiceMaiorLinha = -1;
+
+    Linha soluF = solucao.at(0);//so pra iniciar a (s')
+
+    while (k <= r){
+        //Vamos pegar sempre o indice da maior linha
+        for(int i = 0; i < vndSolucao.size(); i++){
+            if(vndSolucao.at(i).getTempoTotal() > maiorLinha){
+                maiorLinha = vndSolucao.at(i).getTempoTotal();
+                indiceMaiorLinha = i;
+            }
+        }
+
+        if(k == 1){//Se o k for igual a 1 temos que usar o SWAP1
+            soluF = swap1(maiorLinhaDeTodas(vndSolucao), matrizDeAdj);
+            cout << "\nSWAP1!" << endl;
+        }else if(k == 2){
+            cout << "\nSWAP 1 Falhou! Agora seria a hora de usar o SWAP2!" << endl;
+        }
+        cout << "\nSoluf: " << soluF.getTempoTotal() << " vs VND: " << vndSolucao.at(indiceMaiorLinha).getTempoTotal() << endl;
+        if(soluF.getTempoTotal() < vndSolucao.at(indiceMaiorLinha).getTempoTotal()){
+            vndSolucao.at(indiceMaiorLinha) = soluF;
+            vndSolucao.at(indiceMaiorLinha).recalculaTempoTotal();
+            k = 1;
+        }else{
+            k += 1;
+        }
+    }
+
+    return vndSolucao;
 }
 
 int main(int argc, char const *argv[]) {
@@ -212,6 +313,9 @@ int main(int argc, char const *argv[]) {
 
     swap_2(solucao, 1);
     imprimirSolucao(solucao);
+
+    vector<Linha> vndsolution = VND(2, solucao, matrizDeAdj);
+    imprimirSolucao(vndsolution);
 
     return 0;
 }
