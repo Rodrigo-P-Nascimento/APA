@@ -1,10 +1,11 @@
 #include "Linha.h"
 
-Linha::Linha(vector<vector<int>>* matrizDeAdj)
+Linha::Linha(vector<vector<int>>* matrizDeAdj, int indice)
 {
     this->matrizDeAdj = matrizDeAdj;
     this->tempoTotal = 0;
     this->produtos.clear();
+    this->indice = indice;
 }
 
 Linha::~Linha()
@@ -20,7 +21,7 @@ void Linha::pushProduto(Produto* item)
         tempoTotal += (*matrizDeAdj)[produtos.back().indice][item->indice];   //adiciona o tempo de transicao do ultimo produto para o proximo (item)
     }
     produtos.push_back(*item);
-    item->disponivel = false;
+    item->estado = indice;
     tempoTotal += item->tempo;
 }
 
@@ -34,7 +35,7 @@ Produto* Linha::popProduto()
         tempoTotal -= (*matrizDeAdj)[penultimo->indice][ultimo->indice];
     }
     tempoTotal -= ultimo->tempo;
-    ultimo->disponivel = true;
+    ultimo->estado = PRODUTO_DISPONIVEL;
     produtos.pop_back();
     return ultimo;
 }
@@ -42,18 +43,6 @@ Produto* Linha::popProduto()
 int Linha::getTempoTotal()
 {
     return tempoTotal;
-}
-
-string Linha::getProdutos()
-{
-    string linha = "";
-
-    for (size_t i = 0; i < produtos.size(); i++)
-    {
-        linha += to_string(produtos[i].tempo);
-        linha += " ";
-    }
-    return linha;
 }
 
 int Linha::getTempoParcial(Produto* produtoCandidato)

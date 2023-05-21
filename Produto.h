@@ -3,6 +3,8 @@
 
 #pragma once
 
+#define PRODUTO_DISPONIVEL -1
+
 using namespace std;
 
 /*
@@ -17,9 +19,9 @@ class Produto{
 public:
     int indice; // indice  = indice UNICO do produto
     int tempo; // tempo = tempo de produção do produto
-    bool disponivel; // disponivel = disponibilidade do produto (se pode ser adicionado a solução ou não)
+    int estado; //indica se o produto está disponivel, ou se esta em alguma linha
 
-    Produto(int indice, int tempo, bool disponibilidade);
+    Produto(int indice, int tempo, int estado);
     ~Produto();
 };
 

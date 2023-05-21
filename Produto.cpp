@@ -1,9 +1,9 @@
 #include "Produto.h"
 
-Produto::Produto(int indice, int tempo, bool disponibilidade){
+Produto::Produto(int indice, int tempo, int estado){
     this->indice = indice;
     this->tempo = tempo;
-    this->disponivel = disponibilidade;
+    this->estado = estado;
 }
 
 Produto::~Produto(){
