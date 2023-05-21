@@ -45,10 +45,18 @@ int Linha::getTempoTotal()
     return tempoTotal;
 }
 
-int Linha::getTempoParcial(Produto* produtoCandidato)
+int Linha::getTempoParcial(unsigned indice) //retorna o tempo geral relativo ao produto, na posicao "indice" da linha, e suas transicoes
 {
-    if (produtos.size() > 0)   //se nao tiver vazia, calcula o tempo de transicao
-        return (*matrizDeAdj)[produtos.back().indice][produtoCandidato->indice] + produtoCandidato->tempo;
-    else
-        return produtoCandidato->tempo;
+    if (produtos.size()-1 >= indice)   //verifica se o elemento pertence ao vetor
+        return -1;
+
+    int tempo = produtos.at(indice).tempo;
+
+    if (indice-1 >= 0)
+        tempo += TRANSICAO(indice-1, indice);
+    
+    if (indice+1 <= produtos.size()-1)
+        tempo += TRANSICAO(indice, indice+1);
+
+    return tempo;
 }

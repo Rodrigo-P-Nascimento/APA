@@ -57,7 +57,7 @@ void lerEntrada() {
  * Retorna o índice do produto mais custoso em relação
  * ao tempo de produção, dada uma lista (vector) de produtos
 */
-int maiorProduto(){
+int maiorProduto(vector<Produto>& produtos){
     int indiceDoMaiorProduto = 0;
     int maiorCustoEncontrado = 0;
     for (int j = 0; j < produtos.size(); j++){
@@ -104,7 +104,7 @@ vector<Linha> heuristicaConstrutiva(){
     
     // Adicionando, em cada linha, o produto mais custoso disponível
     for (int i = 0; i < mLinhas; i++){
-        int indiceDoMaiorProduto = maiorProduto(); // Recuperando o índice produto mais custoso não adicionado
+        int indiceDoMaiorProduto = maiorProduto(produtos); // Recuperando o índice produto mais custoso não adicionado
         linhas.at(i).pushProduto(&produtos.at(indiceDoMaiorProduto)); // Adicionando o maior produto a linha atual
         produtosRestantes--; // Decrementando o contador de produtos disponíveis
     }
@@ -151,9 +151,34 @@ vector<Linha> heuristicaConstrutiva(){
     return linhas; // Retornando os vértices da solução: um grafo desconexo, não simétrico e acíclico; em outras palavras, uma floresta que é implementada com uma matriz de adjacência
 }
 
-void swap_2(vector<Linha>& solucao_inicial, unsigned linhaObjetivo)
+int maiorTransicao(Linha& linhaObjetivo)    //procura o produto que causa o maior custo em transicoes na linha
 {
-    solucao_inicial.at(linhaObjetivo);
+    int maiorSoma = 0;
+    int indiceMaiorSoma;
+    for (size_t i = 0; i < linhaObjetivo.produtos.size(); i++) 
+    {
+        int soma = linhaObjetivo.getTempoParcial(i);
+        if (maiorSoma < soma)
+        {
+            maiorSoma = soma;
+            indiceMaiorSoma = i;
+        }
+    }
+    return indiceMaiorSoma;
+}
+
+void swap_2(vector<Linha>& solucao_inicial, unsigned indice_linha)
+{
+    Linha& linhaObjetivo = solucao_inicial.at(indice_linha);
+    int produtoObjetivo = maiorTransicao(linhaObjetivo);
+    
+
+    
+   
+
+
+
+    
 }
 
 void imprimirSolucao(vector<Linha>& linhas){
@@ -184,9 +209,9 @@ int main(int argc, char const *argv[]) {
 
     vector<Linha> solucao = heuristicaConstrutiva();
     imprimirSolucao(solucao);
-/*
-    swap_2(solucao, 2);
+
+    swap_2(solucao, 1);
     imprimirSolucao(solucao);
-*/
+
     return 0;
 }
