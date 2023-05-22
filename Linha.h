@@ -19,7 +19,7 @@ public:
     Produto* popProduto();
     int getTempoTotal();
     int getIndiceLinha();
-    int getTempoParcial(unsigned produto_da_linha); // Retorna o tempo a ser somado a linha caso adicionado o produtoCandidato
+    int getTempoParcial(unsigned produto_da_linha); //retorna o tempo geral relativo ao produto, na posicao "indice" da linha, e suas transicoes
     vector<Produto> produtos;
 
 private:
