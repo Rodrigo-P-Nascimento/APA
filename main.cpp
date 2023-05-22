@@ -185,18 +185,58 @@ int maiorTransicao(Linha& linhaObjetivo)    //procura o produto que causa o maio
     return indiceMaiorSoma;
 }
 
-void swap_2(vector<Linha>& solucao_inicial, unsigned indice_linha)
+//realiza a troca de produtos entre duas linhas
+void trocaProduto(Linha& de, Linha& para, int indice_de, int indice_para)
 {
-    Linha& linhaObjetivo = solucao_inicial.at(indice_linha);
-    int produtoObjetivo = maiorTransicao(linhaObjetivo);
+    Produto aux = para.produtos.at(indice_para);                //guarda produto a ser trocado
+
+    para.produtos.at(indice_para) = de.produtos.at(indice_de);  //linha destinataria recebe novo produto do remetente
+    de.produtos.at(indice_de) = aux;                            //linha remetente recebe antigo produto do destinatario
+
+    para.produtos.at(indice_para).estado = para.getIndiceLinha();//atualiza indice de linha dos produtos
+    de.produtos.at(indice_de).estado = de.getIndiceLinha();
+}
+
+/*  BUG:
+terminate called after throwing an instance of 'std::out_of_range'
+what():  vector::_M_range_check: __n (which is 663590400) >= this->size() (which is 3)
+Aborted
+*/
+void swap2(vector<Linha>& solucao_vnd)
+{
+    Linha& linhaMaior = maiorLinhaDeTodas(solucao_vnd);
+    Linha& linhaMenor = menorLinhaDeTodas(solucao_vnd);
+    int produtoPesado = maiorTransicao(linhaMaior);
+    int maior_tempo = linhaMaior.getTempoParcial(produtoPesado);
+    bool melhorou = false;
+    int melhor_troca;   //indice da melhor troca na linhaMenor
+
+    //realiza trocas entre todos os produtos da menor linha para procurar a melhor
+    for (size_t i = 0; i < linhaMenor.produtos.size(); i++)
+    {
+        trocaProduto(linhaMaior, linhaMenor, produtoPesado, i);
+        int novo_tempo_LMa = linhaMaior.getTempoParcial(produtoPesado);
+        int novo_tempo_LMe = linhaMenor.getTempoParcial(i);
+
+        //se apos a troca o tempo for melhor que o anterior em ambas as linhas, salva informacoes de troca e tempo
+        if(novo_tempo_LMa < maior_tempo && novo_tempo_LMe < maior_tempo)
+        {
+            melhorou = true;
+            melhor_troca = i;
+            if (novo_tempo_LMa >= novo_tempo_LMe)
+                maior_tempo = novo_tempo_LMa;
+            else
+                maior_tempo = novo_tempo_LMe;
+        }
+        trocaProduto(linhaMenor, linhaMaior, i, produtoPesado); //desfaz a troca
+    }
     
-
-    
-   
-
-
-
-    
+    if (melhorou)
+    {
+        trocaProduto(linhaMaior, linhaMenor, produtoPesado, melhor_troca);
+        linhaMaior.recalculaTempoTotal();
+        linhaMenor.recalculaTempoTotal();
+    }
 }
 
 void imprimirSolucao(vector<Linha>& linhas){
@@ -283,7 +323,8 @@ vector<Linha> VND(int numR, vector<Linha>& solucao){
             soluF = swap1(maiorLinhaDeTodas(vndSolucao));
             cout << "\nSWAP1!" << endl;
         }else if(k == 2){
-            cout << "\nSWAP1 Falhou! Agora seria a hora de usar o SWAP2!" << endl;
+            cout << "\nSWAP1 Falhou! Usando SWAP2!" << endl;
+            //swap2(vndSolucao);
         }
         cout << "\nSoluf: " << soluF.getTempoTotal() << " vs VND: " << vndSolucao.at(indiceMaiorLinha).getTempoTotal() << endl;
         if(soluF.getTempoTotal() < vndSolucao.at(indiceMaiorLinha).getTempoTotal()){
