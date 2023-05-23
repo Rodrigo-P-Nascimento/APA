@@ -305,31 +305,31 @@ vector<Linha> VND(int numR, vector<Linha>& solucao){
     
     int r = numR;
     int k = 1;
-    int maiorLinha = -1;
-    int indiceMaiorLinha = -1;
+    //int maiorLinha = -1;
+    //int indiceMaiorLinha = -1;
 
-    Linha soluF = solucao.at(0);//so pra iniciar a (s')
+    Linha soluF = solucao.at(0); //so pra iniciar a (s')
 
     while (k <= r){
-        //Vamos pegar sempre o indice da maior linha
-        for(int i = 0; i < vndSolucao.size(); i++){
-            if(vndSolucao.at(i).getTempoTotal() > maiorLinha){
-                maiorLinha = vndSolucao.at(i).getTempoTotal();
-                indiceMaiorLinha = i;
-            }
+        Linha& maiorLinha = maiorLinhaDeTodas(vndSolucao);
+
+        // k escolhe qual movimento de vizinhança é chamado
+        switch (k){
+            case 1:
+                soluF = swap1(maiorLinhaDeTodas(vndSolucao));
+                cout << "\nSWAP1!" << endl;
+                break;
+            case 2:
+                swap2(vndSolucao);
+                cout << "\nSWAP1 Falhou! Usando SWAP2!" << endl;
+                //swap2(vndSolucao);
+                break;
         }
 
-        if(k == 1){//Se o k for igual a 1 temos que usar o SWAP1
-            soluF = swap1(maiorLinhaDeTodas(vndSolucao));
-            cout << "\nSWAP1!" << endl;
-        }else if(k == 2){
-            cout << "\nSWAP1 Falhou! Usando SWAP2!" << endl;
-            //swap2(vndSolucao);
-        }
-        cout << "\nSoluf: " << soluF.getTempoTotal() << " vs VND: " << vndSolucao.at(indiceMaiorLinha).getTempoTotal() << endl;
-        if(soluF.getTempoTotal() < vndSolucao.at(indiceMaiorLinha).getTempoTotal()){
-            vndSolucao.at(indiceMaiorLinha) = soluF;
-            vndSolucao.at(indiceMaiorLinha).recalculaTempoTotal();
+        cout << "\nSoluf: " << soluF.getTempoTotal() << " vs VND: " << maiorLinha.getTempoTotal() << endl;
+        if(soluF.getTempoTotal() < maiorLinha.getTempoTotal()){
+            maiorLinha = soluF;
+            maiorLinha.recalculaTempoTotal();
             k = 1;
         }else{
             k += 1;
