@@ -4,9 +4,9 @@
 #include <vector>
 #include <string>
 
+#define TRANSICAO(p1, p2) (*matrizDeAdj)[produtos.at(p1).indice][produtos.at(p2).indice]
+
 #pragma once
-
-
 
 class Linha
 {
@@ -19,11 +19,10 @@ public:
     Produto* popProduto();
     int getTempoTotal();
     int getIndiceLinha();
-    int getTempoParcial(unsigned produto_da_linha); //retorna o tempo geral relativo ao produto, na posicao "indice" da linha, e suas transicoes
+    int getTempoParcial(int produto_da_linha); //retorna o tempo geral relativo ao produto, na posicao "indice" da linha, e suas transicoes
     vector<Produto> produtos;
 
 private:
-    #define TRANSICAO(p1, p2) (*matrizDeAdj)[produtos.at(p1).indice][produtos.at(p2).indice]
     int indice;
     unsigned tempoTotal;
     vector<vector<int>>* matrizDeAdj;
