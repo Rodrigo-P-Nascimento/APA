@@ -14,24 +14,24 @@ Linha::~Linha()
     this->produtos.clear();
 }
 
-void Linha::pushProduto(Produto* item)
+void Linha::pushProduto(Produto& item)
 {
     if (!produtos.empty())     //se nao vazia, adiciona tambem o tempo de transicao
     {
-        tempoTotal += (*matrizDeAdj)[produtos.back().indice][item->indice];   //adiciona o tempo de transicao do ultimo produto para o proximo (item)
+        tempoTotal += (*matrizDeAdj)[produtos.back()->indice][item.indice];   //adiciona o tempo de transicao do ultimo produto para o proximo (item)
     }
-    produtos.push_back(*item);
-    item->estado = indice;
-    tempoTotal += item->tempo;
+    produtos.push_back(&item);
+    item.estado = indice;
+    tempoTotal += item.tempo;
 }
 
 Produto* Linha::popProduto()
 {
-    Produto* ultimo = &produtos.back();
+    Produto* ultimo = produtos.back();
 
     if (produtos.size() >= 2)      //se tiver mais de um item, remove o item e o tempo de transicao
     {   
-        Produto *penultimo = &produtos[produtos.size()-2];
+        Produto *penultimo = produtos[produtos.size()-2];
         tempoTotal -= (*matrizDeAdj)[penultimo->indice][ultimo->indice];
     }
     tempoTotal -= ultimo->tempo;
@@ -52,15 +52,15 @@ int Linha::getIndiceLinha()
 
 int Linha::getTempoParcial(int indice) //retorna o tempo geral relativo ao produto, na posicao "indice" da linha, e suas transicoes
 {
-    if (indice > produtos.size()-1 || indice < 0)   //verifica se o elemento pertence ao vetor
+    if ((size_t)indice > produtos.size()-1 || indice < 0)   //verifica se o elemento pertence ao vetor
         return -1;
 
-    int tempo = produtos.at(indice).tempo;
+    int tempo = produtos.at(indice)->tempo;
 
     if (indice-1 >= 0)
         tempo += TRANSICAO(indice-1, indice);
     
-    if (indice+1 <= produtos.size()-1)
+    if ((size_t)indice+1 <= produtos.size()-1)
         tempo += TRANSICAO(indice, indice+1);
 
     return tempo;
@@ -69,11 +69,11 @@ int Linha::getTempoParcial(int indice) //retorna o tempo geral relativo ao produ
 void Linha::recalculaTempoTotal(){ //Esse metodo serve para recalcular o valor de uma linha se assim for desejado.
     int soma = 0;
 
-    for(int i = 0; i < produtos.size(); i++){
-        soma = soma + produtos.at(i).tempo;
+    for(size_t i = 0; i < produtos.size(); i++){
+        soma = soma + produtos.at(i)->tempo;
 
         if(i < produtos.size() - 1){
-            soma = soma + matrizDeAdj->at(produtos.at(i).indice).at(produtos.at(i+1).indice);
+            soma = soma + matrizDeAdj->at(produtos.at(i)->indice).at(produtos.at(i+1)->indice);
         }
     }
 
