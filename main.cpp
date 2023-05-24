@@ -5,14 +5,35 @@
 #include "Produto.cpp"
 #include <climits>
 #include <algorithm>
+#include <chrono>
+#include <ctime> 
+#include <map>
 
-#define PATH "./auxiliar/instancias/n15m4_A.txt"
+#define VALOR_OTIMO 1
 
 using namespace std;
 
 int nProdutos, mLinhas;
 vector<vector<int>> matrizDeAdj; // Matriz com os tempos de manutenção, para receber da entrada de arquivo
 vector<Produto> produtos; // Lista com a abstração completa dos produtos
+map<string, int> arquivos = {
+    {"n10m2_A.txt", VALOR_OTIMO},
+    {"n10m2_B.txt", VALOR_OTIMO},
+    {"n15m3_A.txt", VALOR_OTIMO},
+    {"n15m3_B.txt", VALOR_OTIMO},
+    {"n15m4_A.txt", VALOR_OTIMO},
+    {"n15m4_B.txt", VALOR_OTIMO},
+    {"n29m4_A.txt", VALOR_OTIMO},
+    {"n29m4_B.txt", VALOR_OTIMO},
+    {"n29m6_A.txt", VALOR_OTIMO},
+    {"n29m6_B.txt", VALOR_OTIMO},
+    {"n40m5_A.txt", VALOR_OTIMO},
+    {"n40m5_B.txt", VALOR_OTIMO},
+    {"n52m5_A.txt", VALOR_OTIMO},
+    {"n52m5_B.txt", VALOR_OTIMO},
+    {"n450m16_A.txt", VALOR_OTIMO},
+    {"n500m10_A.txt", VALOR_OTIMO}
+};
 
 /**
  * Função para ler arquivos .txt de entrada, com o seguinte formato:
@@ -23,9 +44,11 @@ vector<Produto> produtos; // Lista com a abstração completa dos produtos
  * 
  * matriz s
 */
-void lerEntrada() {
+void lerEntrada(string PATH) {
     ifstream entrada(PATH);
     int tempo;
+    produtos.clear();
+    matrizDeAdj.clear();
 
     if (!entrada.is_open()) {
         cout << "Erro ao abrir arquivo" << endl;
@@ -124,9 +147,7 @@ vector<Linha> heuristicaConstrutiva(){
         produtosRestantes--; // Decrementando o contador de produtos disponíveis
     }
 
-    //int ultimoProduto; // Índice do último produto da menor linha
     int indiceDaMelhorTransicao; // Índice do produto que oferece o melhor custo de manutenção em relação ao último produto
-    //int menorSoma = 0; // Auxiliar para a menor soma: custo do produto + tempo de manutenção
 
     /**
      * Parte principal do algoritmo guloso.
@@ -158,9 +179,6 @@ vector<Linha> heuristicaConstrutiva(){
         }
         menorLinha.pushProduto(produtos.at(indiceDaMelhorTransicao));
 
-        //produtos.at(indiceDaMelhorTransicao).foiAdicionado = true; // Marcando o produto como adicionado
-        //menorLinha.produtos.push_back(produtos.at(indiceDaMelhorTransicao)); // Adicionando o produto à solução
-        //menorLinha.custo += produtos.at(indiceDaMelhorTransicao).tempo + matrizDeAdj.at(ultimoProduto).at(indiceDaMelhorTransicao); // Atualizando o custo total da linha atual
         produtosRestantes--; // Decrementando o contador de produtos disponíveis
     }
     return linhas; // Retornando os vértices da solução: um grafo desconexo, não simétrico e acíclico; em outras palavras, uma floresta que é implementada com uma matriz de adjacência
@@ -249,21 +267,26 @@ bool swap2(vector<Linha>& solucao_vnd)
     return melhorou;
 }
 
-void imprimirSolucao(vector<Linha>& linhas){
+/**
+ * Imprime os produtos nas linhas de produção (representação da solução)
+ * Retorna o valor da solução
+*/
+int imprimirSolucao(vector<Linha>& linhas){
     cout << "\n";
     for (size_t i = 0; i < linhas.size(); i++){
-        cout << "Linha de producao " << i+1 << ": ";
+        cout << "\tLinha de producao " << i+1 << ": ";
         
         for (size_t j = 0; j < linhas.at(i).produtos.size(); j++){
-            cout << "Produto " << linhas.at(i).produtos.at(j)->indice+1;
+            cout << "P" << linhas.at(i).produtos.at(j)->indice+1;
             if (j < linhas.at(i).produtos.size()-1){
                 cout << " -> ";
             }
         }
         cout << " | Custo = " << linhas.at(i).getTempoTotal() << endl;
     }
-    cout << "Custo da maior linha (funcao objetivo): " << maiorLinhaDeTodas(linhas).getTempoTotal() << endl;
-    cout << "\n";
+    //cout << "\tCusto da maior linha (funcao objetivo): " << maiorLinhaDeTodas(linhas).getTempoTotal() << endl;
+    //cout << "\n";
+    return maiorLinhaDeTodas(linhas).getTempoTotal();
 }
 
 bool swap1(Linha& LE){
@@ -300,14 +323,17 @@ vector<Linha> VND(int numR, vector<Linha>& solucao){
 
     while (k <= r){
 
-        if(k == 1){     //Se o k for igual a 1 temos que usar o SWAP1
-            cout << "\nSWAP1!" << endl;
-            melhor = swap1(maiorLinhaDeTodas(vndSolucao));
-            imprimirSolucao(vndSolucao); //! teste
-        }else if(k == 2){
-            cout << "\nSWAP1 Falhou! Usando SWAP2!" << endl;
-            melhor = swap2(vndSolucao);
-            imprimirSolucao(vndSolucao); //! teste
+        switch (k){
+            case 1:
+                //cout << "\nSWAP1!" << endl;
+                melhor = swap1(maiorLinhaDeTodas(vndSolucao));
+                //imprimirSolucao(vndSolucao); //! teste
+                break;
+            case 2:
+                //cout << "\nSWAP1 Falhou! Usando SWAP2!" << endl;
+                melhor = swap2(vndSolucao);
+                //imprimirSolucao(vndSolucao); //! teste
+                break;
         }
 
         if(melhor){
@@ -320,14 +346,45 @@ vector<Linha> VND(int numR, vector<Linha>& solucao){
 }
 
 int main() {
-    // Lendo o arquivo de entrada
-    lerEntrada();
+    for (auto& par : arquivos){
+        string nomeEntrada = par.first;
+        int valorOtimo = par.second;
 
-    vector<Linha> solucao = heuristicaConstrutiva();
-    imprimirSolucao(solucao);
+        // Lendo o arquivo de entrada
+        string caminhoDaEntrada = "./auxiliar/instancias/" + par.first;
+        lerEntrada(caminhoDaEntrada);
+        cout << "Instancia: " << par.first << " | Solucao Otima: " << par.second << endl;
 
-    vector<Linha> vndsolucao = VND(2, solucao);
-    imprimirSolucao(vndsolucao);
+        // Execução e dados do algoritmo guloso
+        cout << "\n\tSolucao da Heuristica Construtiva:" << endl;
+        auto inicio = chrono::high_resolution_clock::now();
+        vector<Linha> solucaoGulosa = heuristicaConstrutiva();
+        auto fim = chrono::high_resolution_clock::now();
+        auto duracao = std::chrono::duration_cast<std::chrono::milliseconds>(fim - inicio);
+        int valorDaSolucao = imprimirSolucao(solucaoGulosa);
+        cout << "\tValor da solucao encontrada: " << valorDaSolucao << endl;
+        cout << "\tTempo de execucao: " << duracao.count() << " ms" << endl;
+        cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100.00 << endl;
 
+        cout << "\n";
+
+        // Execução e dados do algoritmo VND
+        cout << "\tSolucao do VND:" << endl;
+        inicio = chrono::high_resolution_clock::now();
+        vector<Linha> solucaoVND = VND(2, solucaoGulosa);
+        fim = chrono::high_resolution_clock::now();
+        duracao = std::chrono::duration_cast<std::chrono::milliseconds>(fim - inicio);
+        valorDaSolucao = imprimirSolucao(solucaoVND);
+        cout << "\tValor da solucao encontrada: " << valorDaSolucao << endl;
+        cout << "\tTempo de execucao: " << duracao.count() << " ms" << endl;
+        cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100.00 << endl;
+        
+        // Separador da exibição de soluções
+        cout << "\n\n";
+        for (int j = 0; j < 40; j++){
+            cout << "+-+";
+        }
+        cout << "\n\n";
+    }
     return 0;
 }
