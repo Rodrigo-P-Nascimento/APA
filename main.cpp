@@ -301,19 +301,14 @@ vector<Linha> VND(int numR, vector<Linha>& solucao){
     
     int r = numR;
     int k = 1;
-    int maiorLinha = -1;
-    int indiceMaiorLinha = -1;
+    //int maiorLinha = -1;
+    //int indiceMaiorLinha = -1;
 
-    Linha soluF = solucao.at(0);//so pra iniciar a (s')
+    Linha soluF = solucao.at(0); //so pra iniciar a (s')
 
     while (k <= r){
-        //Vamos pegar sempre o indice da maior linha
-        for(size_t i = 0; i < vndSolucao.size(); i++){
-            if(vndSolucao.at(i).getTempoTotal() > maiorLinha){
-                maiorLinha = vndSolucao.at(i).getTempoTotal();
-                indiceMaiorLinha = i;
-            }
-        }
+
+        Linha& maiorLinha = maiorLinhaDeTodas(vndSolucao);
 
         if(k == 1){//Se o k for igual a 1 temos que usar o SWAP1
             soluF = swap1(maiorLinhaDeTodas(vndSolucao));
@@ -324,10 +319,10 @@ vector<Linha> VND(int numR, vector<Linha>& solucao){
             swap2(vndSolucao);
             imprimirSolucao(vndSolucao); //! teste
         }
-        //cout << "\nSoluf: " << soluF.getTempoTotal() << " vs VND: " << vndSolucao.at(indiceMaiorLinha).getTempoTotal() << endl;
-        if(soluF.getTempoTotal() < vndSolucao.at(indiceMaiorLinha).getTempoTotal()){
-            vndSolucao.at(indiceMaiorLinha) = soluF;
-            vndSolucao.at(indiceMaiorLinha).recalculaTempoTotal();
+        //cout << "\nSoluf: " << soluF.getTempoTotal() << " vs VND: " << maiorLinha.getTempoTotal() << endl;
+        if(soluF.getTempoTotal() < maiorLinha.getTempoTotal()){
+            maiorLinha = soluF;
+            maiorLinha.recalculaTempoTotal();
             k = 1;
         }else{
             k += 1;
