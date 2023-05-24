@@ -62,9 +62,8 @@ int maiorProduto(vector<Produto>& produtos){
     int indiceDoMaiorProduto = 0;
     int maiorCustoEncontrado = 0;
     for (size_t j = 0; j < produtos.size(); j++){
-        Produto produtoAtual = produtos.at(j);
-        if (produtoAtual.tempo > maiorCustoEncontrado && produtoAtual.estado == PRODUTO_DISPONIVEL){
-            maiorCustoEncontrado = produtoAtual.tempo;
+        if (produtos[j].tempo > maiorCustoEncontrado && produtos[j].estado == PRODUTO_DISPONIVEL){
+            maiorCustoEncontrado = produtos[j].tempo;
             indiceDoMaiorProduto = j;
         }
     }
@@ -79,9 +78,8 @@ int maiorProduto(vector<Produto>& produtos){
 Linha& menorLinhaDeTodas(vector<Linha>& linhas){
     int menorCustoDeLinha = INT_MAX, indiceDaMenorLinha;
     for (size_t i = 0; i < linhas.size(); i++){
-        Linha linhaAtual = linhas.at(i);
-        if (linhaAtual.getTempoTotal() < menorCustoDeLinha){
-            menorCustoDeLinha = linhaAtual.getTempoTotal();
+        if (linhas[i].getTempoTotal() < menorCustoDeLinha){
+            menorCustoDeLinha = linhas[i].getTempoTotal();
             indiceDaMenorLinha = i;
         }
     }
@@ -96,9 +94,8 @@ Linha& menorLinhaDeTodas(vector<Linha>& linhas){
 Linha& maiorLinhaDeTodas(vector<Linha>& linhas){
     int maiorCustoDeLinha = -1, indiceDaMaiorLinha;
     for (size_t i = 0; i < linhas.size(); i++){
-        Linha linhaAtual = linhas.at(i);
-        if (linhaAtual.getTempoTotal() > maiorCustoDeLinha){
-            maiorCustoDeLinha = linhaAtual.getTempoTotal();
+        if (linhas[i].getTempoTotal() > maiorCustoDeLinha){
+            maiorCustoDeLinha = linhas[i].getTempoTotal();
             indiceDaMaiorLinha = i;
         }
     }

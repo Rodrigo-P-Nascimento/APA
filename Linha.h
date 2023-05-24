@@ -6,8 +6,6 @@
 
 #define TRANSICAO(p1, p2) (*matrizDeAdj)[produtos.at(p1)->indice][produtos.at(p2)->indice]
 
-#pragma once
-
 class Linha
 {
 public:
