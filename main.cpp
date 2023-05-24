@@ -185,7 +185,7 @@ int maiorTransicao(Linha& linhaObjetivo)    //procura o produto que causa o maio
     return indiceMaiorSoma;
 }
 
-//realiza a troca de produtos entre duas linhas
+//realiza a troca de produtos
 void trocaProduto(Linha& L1, Linha& L2, int indice_L1, int indice_L2)
 {
     Produto* aux = L2.produtos.at(indice_L2);                //guarda produto a ser trocado
@@ -193,15 +193,20 @@ void trocaProduto(Linha& L1, Linha& L2, int indice_L1, int indice_L2)
     L2.produtos.at(indice_L2) = L1.produtos.at(indice_L1);  //linha destinataria recebe novo produto do remetente
     L1.produtos.at(indice_L1) = aux;                            //linha remetente recebe antigo produto do destinatario
 
-    L2.produtos.at(indice_L2)->estado = L2.getIndiceLinha();//atualiza indice de linha dos produtos
-    L1.produtos.at(indice_L1)->estado = L1.getIndiceLinha();
+    L1.produtos.at(indice_L1)->estado = L1.getIndiceLinha();//atualiza indice de linha dos produtos
+    L1.recalculaTempoTotal();
+
+    if(&L1 != &L2){  //caso seja feita trocas entre linhas diferentes
+        L2.recalculaTempoTotal();
+        L2.produtos.at(indice_L2)->estado = L2.getIndiceLinha();
+    }
 }
 
-void swap2(vector<Linha>& solucao_vnd)
+bool swap2(vector<Linha>& solucao_vnd)
 {
     Linha& linhaMaior = maiorLinhaDeTodas(solucao_vnd);
     Linha& linhaMenor = menorLinhaDeTodas(solucao_vnd);
-    int produtoPesado = maiorTransicao(linhaMaior);
+    int indice_maior = maiorTransicao(linhaMaior);
     int maior_tempo = linhaMaior.getTempoTotal();
     bool melhorou = false;
     int melhor_troca;   //indice da melhor troca na linhaMenor
@@ -209,9 +214,7 @@ void swap2(vector<Linha>& solucao_vnd)
     //realiza trocas entre todos os produtos da menor linha para procurar a melhor
     for (size_t i = 0; i < linhaMenor.produtos.size(); i++)
     {
-        trocaProduto(linhaMaior, linhaMenor, produtoPesado, i);
-        linhaMaior.recalculaTempoTotal();
-        linhaMenor.recalculaTempoTotal();
+        trocaProduto(linhaMaior, linhaMenor, indice_maior, i);
         int novo_tempo_LMa = linhaMaior.getTempoTotal();
         int novo_tempo_LMe = linhaMenor.getTempoTotal();
 
@@ -225,14 +228,13 @@ void swap2(vector<Linha>& solucao_vnd)
             else
                 maior_tempo = novo_tempo_LMe;
         }
-        trocaProduto(linhaMenor, linhaMaior, i, produtoPesado); //desfaz a troca
+        trocaProduto(linhaMenor, linhaMaior, i, indice_maior); //desfaz a troca
     }
     
     if (melhorou)
-        trocaProduto(linhaMaior, linhaMenor, produtoPesado, melhor_troca);
+        trocaProduto(linhaMaior, linhaMenor, indice_maior, melhor_troca);
     
-    linhaMaior.recalculaTempoTotal();
-    linhaMenor.recalculaTempoTotal();
+    return melhorou;
 }
 
 void imprimirSolucao(vector<Linha>& linhas){
@@ -252,77 +254,51 @@ void imprimirSolucao(vector<Linha>& linhas){
     cout << "\n";
 }
 
-Linha swap1(Linha LE){
+bool swap1(Linha& LE){
 
-    int novoValorF = LE.getTempoTotal();;
+    int melhorValor = LE.getTempoTotal();;
     int prodI = 0 , prodJ = 0;
+    bool melhorou = false;
     
-    Linha teste = LE;
-    /*
-    cout << "Tempo total incial da linha antes do SWAP: " << novoValorF << endl;
-    cout << "Quantidade de produtos da linha: " << LE.produtos.size() << endl;
-
-    for(int i = 0; i < LE.produtos.size(); i++){
-        cout << "[" << i << "] = " << LE.produtos.at(i).indice << " " ; 
-    }
-
-    cout << "\n" ;
-    */
     for(size_t i = 0 ; i < LE.produtos.size()-1; i++){
         for(size_t j = i+1; j < LE.produtos.size(); j++){
-            teste = LE;
-            iter_swap(teste.produtos.begin() + i, teste.produtos.begin() + j);
-
-            /*for(int i = 0; i < teste.produtos.size(); i++){
-                cout << "[" << i << "] = " << teste.produtos.at(i).indice << " " ; 
-            }*/
-
-            teste.recalculaTempoTotal();
-
-            //cout << " Novo Valor do Teste[" << i <<"]: " << teste.getTempoTotal() << endl;
-
-            if(novoValorF > teste.getTempoTotal()){
+            
+            trocaProduto(LE, LE, i, j);
+            if(melhorValor > LE.getTempoTotal()){
                 prodI = i;
                 prodJ = j;
-                novoValorF = teste.getTempoTotal();
+                melhorValor = LE.getTempoTotal();
+                melhorou = true;
             }
+            trocaProduto(LE, LE, i, j);
         }
     }
-    //cout << "\nTempo total final da linha depois do SWAP: " << novoValorF << endl;
-    iter_swap(LE.produtos.begin() + prodI, LE.produtos.begin() + prodJ);
-    LE.recalculaTempoTotal();
-
-    return LE;
+    
+    if (melhorou)
+        trocaProduto(LE, LE, prodI, prodJ);
+    
+    return melhorou;
 }
 
 vector<Linha> VND(int numR, vector<Linha>& solucao){
-    
-    vector<Linha> vndSolucao = solucao;//fazemos uma copia que vai ser retornada apos o fim do VND
-    
+    vector<Linha> vndSolucao = solucao;
     int r = numR;
     int k = 1;
-    //int maiorLinha = -1;
-    //int indiceMaiorLinha = -1;
-
-    Linha soluF = solucao.at(0); //so pra iniciar a (s')
+    bool melhor;
 
     while (k <= r){
 
-        Linha& maiorLinha = maiorLinhaDeTodas(vndSolucao);
-
-        if(k == 1){//Se o k for igual a 1 temos que usar o SWAP1
-            soluF = swap1(maiorLinhaDeTodas(vndSolucao));
+        if(k == 1){     //Se o k for igual a 1 temos que usar o SWAP1
             cout << "\nSWAP1!" << endl;
+            melhor = swap1(maiorLinhaDeTodas(vndSolucao));
             imprimirSolucao(vndSolucao); //! teste
         }else if(k == 2){
             cout << "\nSWAP1 Falhou! Usando SWAP2!" << endl;
-            swap2(vndSolucao);
+            melhor = swap2(vndSolucao);
             imprimirSolucao(vndSolucao); //! teste
         }
-        //cout << "\nSoluf: " << soluF.getTempoTotal() << " vs VND: " << maiorLinha.getTempoTotal() << endl;
-        if(soluF.getTempoTotal() < maiorLinha.getTempoTotal()){
-            maiorLinha = soluF;
-            maiorLinha.recalculaTempoTotal();
+
+        if(melhor){
             k = 1;
         }else{
             k += 1;
@@ -338,8 +314,8 @@ int main() {
     vector<Linha> solucao = heuristicaConstrutiva();
     imprimirSolucao(solucao);
 
-    vector<Linha> vndsolution = VND(2, solucao);
-    imprimirSolucao(vndsolution);
+    vector<Linha> vndsolucao = VND(2, solucao);
+    imprimirSolucao(vndsolucao);
 
     return 0;
 }
