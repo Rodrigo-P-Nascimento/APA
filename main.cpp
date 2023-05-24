@@ -6,7 +6,7 @@
 #include <climits>
 #include <algorithm>
 
-#define PATH "./auxiliar/instancias/entrada.txt"
+#define PATH "./auxiliar/instancias/n15m3_A.txt"
 
 using namespace std;
 
@@ -40,13 +40,13 @@ void lerEntrada() {
         matrizDeAdj[i].resize(nProdutos);
     }
 
-    for (size_t i = 0; i < nProdutos; i++) {
+    for (int i = 0; i < nProdutos; i++) {
         entrada >> tempo;
         produtos.push_back(Produto(i, tempo, PRODUTO_DISPONIVEL));
     }
 
-    for (size_t i = 0; i < nProdutos; i++) {
-        for (size_t j = 0; j < nProdutos; j++) {
+    for (int i = 0; i < nProdutos; i++) {
+        for (int j = 0; j < nProdutos; j++) {
             entrada >> matrizDeAdj[i][j];
         }
     }
@@ -61,7 +61,7 @@ void lerEntrada() {
 int maiorProduto(vector<Produto>& produtos){
     int indiceDoMaiorProduto = 0;
     int maiorCustoEncontrado = 0;
-    for (int j = 0; j < produtos.size(); j++){
+    for (size_t j = 0; j < produtos.size(); j++){
         Produto produtoAtual = produtos.at(j);
         if (produtoAtual.tempo > maiorCustoEncontrado && produtoAtual.estado == PRODUTO_DISPONIVEL){
             maiorCustoEncontrado = produtoAtual.tempo;
@@ -78,7 +78,7 @@ int maiorProduto(vector<Produto>& produtos){
 */
 Linha& menorLinhaDeTodas(vector<Linha>& linhas){
     int menorCustoDeLinha = INT_MAX, indiceDaMenorLinha;
-    for (int i = 0; i < linhas.size(); i++){
+    for (size_t i = 0; i < linhas.size(); i++){
         Linha linhaAtual = linhas.at(i);
         if (linhaAtual.getTempoTotal() < menorCustoDeLinha){
             menorCustoDeLinha = linhaAtual.getTempoTotal();
@@ -95,7 +95,7 @@ Linha& menorLinhaDeTodas(vector<Linha>& linhas){
 */
 Linha& maiorLinhaDeTodas(vector<Linha>& linhas){
     int maiorCustoDeLinha = -1, indiceDaMaiorLinha;
-    for (int i = 0; i < linhas.size(); i++){
+    for (size_t i = 0; i < linhas.size(); i++){
         Linha linhaAtual = linhas.at(i);
         if (linhaAtual.getTempoTotal() > maiorCustoDeLinha){
             maiorCustoDeLinha = linhaAtual.getTempoTotal();
@@ -117,13 +117,13 @@ vector<Linha> heuristicaConstrutiva(){
     int produtosRestantes = produtos.size(); // Número de produtos que não foram adicionados à solução
     vector<Linha> linhas; // Estrutura de dados (floresta com matriz de adjacência) da solução vazia
     
-    for (size_t i = 0; i < mLinhas; i++)
+    for (int i = 0; i < mLinhas; i++)
         linhas.push_back(Linha(&matrizDeAdj, i));
     
     // Adicionando, em cada linha, o produto mais custoso disponível
     for (int i = 0; i < mLinhas; i++){
         int indiceDoMaiorProduto = maiorProduto(produtos); // Recuperando o índice produto mais custoso não adicionado
-        linhas.at(i).pushProduto(&produtos.at(indiceDoMaiorProduto)); // Adicionando o maior produto a linha atual
+        linhas.at(i).pushProduto(produtos.at(indiceDoMaiorProduto)); // Adicionando o maior produto a linha atual
         produtosRestantes--; // Decrementando o contador de produtos disponíveis
     }
 
@@ -137,7 +137,7 @@ vector<Linha> heuristicaConstrutiva(){
      */
     while (produtosRestantes){
         Linha& menorLinha = menorLinhaDeTodas(linhas); // Recuperando o objeto da menor linha, que é modificado posteriormente
-        Produto ultimoProduto = menorLinha.produtos.back(); // Recuperando o objeto do último produto da menor linha
+        Produto ultimoProduto = *menorLinha.produtos.back(); // Recuperando o objeto do último produto da menor linha
         int menorSoma = INT_MAX; // Auxiliar para achar a menor soma: tempo + manutenção
 
         /**
@@ -145,7 +145,7 @@ vector<Linha> heuristicaConstrutiva(){
          * Faz isso percorrendo a linha da matriz de tempos de manutenção (matriz de adjacência)
          * correspondente ao último produto da menor linha.
         */
-        for (int i = 0; i < produtos.size(); i++){
+        for (size_t i = 0; i < produtos.size(); i++){
             Produto produtoAtual = produtos.at(i);
             int tempoTransicaoAtual = matrizDeAdj.at(ultimoProduto.indice).at(i);
 
@@ -159,7 +159,7 @@ vector<Linha> heuristicaConstrutiva(){
                 menorSoma = produtoAtual.tempo + tempoTransicaoAtual;
             }
         }
-        menorLinha.pushProduto(&produtos.at(indiceDaMelhorTransicao));
+        menorLinha.pushProduto(produtos.at(indiceDaMelhorTransicao));
 
         //produtos.at(indiceDaMelhorTransicao).foiAdicionado = true; // Marcando o produto como adicionado
         //menorLinha.produtos.push_back(produtos.at(indiceDaMelhorTransicao)); // Adicionando o produto à solução
@@ -186,15 +186,15 @@ int maiorTransicao(Linha& linhaObjetivo)    //procura o produto que causa o maio
 }
 
 //realiza a troca de produtos entre duas linhas
-void trocaProduto(Linha& de, Linha& para, int indice_de, int indice_para)
+void trocaProduto(Linha& L1, Linha& L2, int indice_L1, int indice_L2)
 {
-    Produto aux = para.produtos.at(indice_para);                //guarda produto a ser trocado
+    Produto* aux = L2.produtos.at(indice_L2);                //guarda produto a ser trocado
 
-    para.produtos.at(indice_para) = de.produtos.at(indice_de);  //linha destinataria recebe novo produto do remetente
-    de.produtos.at(indice_de) = aux;                            //linha remetente recebe antigo produto do destinatario
+    L2.produtos.at(indice_L2) = L1.produtos.at(indice_L1);  //linha destinataria recebe novo produto do remetente
+    L1.produtos.at(indice_L1) = aux;                            //linha remetente recebe antigo produto do destinatario
 
-    para.produtos.at(indice_para).estado = para.getIndiceLinha();//atualiza indice de linha dos produtos
-    de.produtos.at(indice_de).estado = de.getIndiceLinha();
+    L2.produtos.at(indice_L2)->estado = L2.getIndiceLinha();//atualiza indice de linha dos produtos
+    L1.produtos.at(indice_L1)->estado = L1.getIndiceLinha();
 }
 
 void swap2(vector<Linha>& solucao_vnd)
@@ -202,7 +202,7 @@ void swap2(vector<Linha>& solucao_vnd)
     Linha& linhaMaior = maiorLinhaDeTodas(solucao_vnd);
     Linha& linhaMenor = menorLinhaDeTodas(solucao_vnd);
     int produtoPesado = maiorTransicao(linhaMaior);
-    int maior_tempo = linhaMaior.getTempoParcial(produtoPesado);
+    int maior_tempo = linhaMaior.getTempoTotal();
     bool melhorou = false;
     int melhor_troca;   //indice da melhor troca na linhaMenor
 
@@ -210,8 +210,10 @@ void swap2(vector<Linha>& solucao_vnd)
     for (size_t i = 0; i < linhaMenor.produtos.size(); i++)
     {
         trocaProduto(linhaMaior, linhaMenor, produtoPesado, i);
-        int novo_tempo_LMa = linhaMaior.getTempoParcial(produtoPesado);
-        int novo_tempo_LMe = linhaMenor.getTempoParcial(i);
+        linhaMaior.recalculaTempoTotal();
+        linhaMenor.recalculaTempoTotal();
+        int novo_tempo_LMa = linhaMaior.getTempoTotal();
+        int novo_tempo_LMe = linhaMenor.getTempoTotal();
 
         //se apos a troca o tempo for melhor que o anterior em ambas as linhas, salva informacoes de troca e tempo
         if(novo_tempo_LMa < maior_tempo && novo_tempo_LMe < maior_tempo)
@@ -227,20 +229,19 @@ void swap2(vector<Linha>& solucao_vnd)
     }
     
     if (melhorou)
-    {
         trocaProduto(linhaMaior, linhaMenor, produtoPesado, melhor_troca);
-        linhaMaior.recalculaTempoTotal();
-        linhaMenor.recalculaTempoTotal();
-    }
+    
+    linhaMaior.recalculaTempoTotal();
+    linhaMenor.recalculaTempoTotal();
 }
 
 void imprimirSolucao(vector<Linha>& linhas){
     cout << "\n";
-    for (int i = 0; i < linhas.size(); i++){
+    for (size_t i = 0; i < linhas.size(); i++){
         cout << "Linha de producao " << i+1 << ": ";
         
-        for (int j = 0; j < linhas.at(i).produtos.size(); j++){
-            cout << "Produto " << linhas.at(i).produtos.at(j).indice+1;
+        for (size_t j = 0; j < linhas.at(i).produtos.size(); j++){
+            cout << "Produto " << linhas.at(i).produtos.at(j)->indice+1;
             if (j < linhas.at(i).produtos.size()-1){
                 cout << " -> ";
             }
@@ -267,8 +268,8 @@ Linha swap1(Linha LE){
 
     cout << "\n" ;
     */
-    for(int i = 0 ; i < LE.produtos.size()-1; i++){
-        for(int j = i+1; j < LE.produtos.size(); j++){
+    for(size_t i = 0 ; i < LE.produtos.size()-1; i++){
+        for(size_t j = i+1; j < LE.produtos.size(); j++){
             teste = LE;
             iter_swap(teste.produtos.begin() + i, teste.produtos.begin() + j);
 
@@ -306,17 +307,19 @@ vector<Linha> VND(int numR, vector<Linha>& solucao){
     Linha soluF = solucao.at(0); //so pra iniciar a (s')
 
     while (k <= r){
+
         Linha& maiorLinha = maiorLinhaDeTodas(vndSolucao);
 
         if(k == 1){//Se o k for igual a 1 temos que usar o SWAP1
             soluF = swap1(maiorLinhaDeTodas(vndSolucao));
             cout << "\nSWAP1!" << endl;
+            imprimirSolucao(vndSolucao); //! teste
         }else if(k == 2){
             cout << "\nSWAP1 Falhou! Usando SWAP2!" << endl;
             swap2(vndSolucao);
+            imprimirSolucao(vndSolucao); //! teste
         }
-
-        cout << "\nSoluf: " << soluF.getTempoTotal() << " vs VND: " << maiorLinha.getTempoTotal() << endl;
+        //cout << "\nSoluf: " << soluF.getTempoTotal() << " vs VND: " << maiorLinha.getTempoTotal() << endl;
         if(soluF.getTempoTotal() < maiorLinha.getTempoTotal()){
             maiorLinha = soluF;
             maiorLinha.recalculaTempoTotal();
