@@ -6,7 +6,7 @@
 #include <climits>
 #include <algorithm>
 
-#define PATH "./auxiliar/instancias/n15m3_A.txt"
+#define PATH "./auxiliar/instancias/n15m4_A.txt"
 
 using namespace std;
 
@@ -205,34 +205,49 @@ void trocaProduto(Linha& L1, Linha& L2, int indice_L1, int indice_L2)
 bool swap2(vector<Linha>& solucao_vnd)
 {
     Linha& linhaMaior = maiorLinhaDeTodas(solucao_vnd);
-    Linha& linhaMenor = menorLinhaDeTodas(solucao_vnd);
-    int indice_maior = maiorTransicao(linhaMaior);
     int maior_tempo = linhaMaior.getTempoTotal();
     bool melhorou = false;
-    int melhor_troca;   //indice da melhor troca na linhaMenor
+    int melhor_produto_LMa;     //indice da melhor troca da linhaMaior
+    int melhor_produto_LMe;     //indice da melhor troca da linhaMenor
+    int melhor_linha;           //indice da melhor linhaMenor
 
-    //realiza trocas entre todos os produtos da menor linha para procurar a melhor
-    for (size_t i = 0; i < linhaMenor.produtos.size(); i++)
+
+    for (size_t l = 0; l < mLinhas; l++)
     {
-        trocaProduto(linhaMaior, linhaMenor, indice_maior, i);
-        int novo_tempo_LMa = linhaMaior.getTempoTotal();
-        int novo_tempo_LMe = linhaMenor.getTempoTotal();
+        if (l == linhaMaior.getIndiceLinha()) 
+            continue;
+        
+        Linha& linhaMenor = solucao_vnd[l];
 
-        //se apos a troca o tempo for melhor que o anterior em ambas as linhas, salva informacoes de troca e tempo
-        if(novo_tempo_LMa < maior_tempo && novo_tempo_LMe < maior_tempo)
+        for (size_t i = 0; i < linhaMaior.produtos.size(); i++)
         {
-            melhorou = true;
-            melhor_troca = i;
-            if (novo_tempo_LMa >= novo_tempo_LMe)
-                maior_tempo = novo_tempo_LMa;
-            else
-                maior_tempo = novo_tempo_LMe;
+            //realiza trocas entre todos os produtos da menor linha para procurar a melhor
+            for (size_t j = 0; j < linhaMenor.produtos.size(); j++)
+            {
+                trocaProduto(linhaMaior, linhaMenor, i, j);
+                int novo_tempo_LMa = linhaMaior.getTempoTotal();
+                int novo_tempo_LMe = linhaMenor.getTempoTotal();
+
+                //se apos a troca o tempo for melhor que o anterior em ambas as linhas, salva informacoes de troca e tempo
+                if(novo_tempo_LMa < maior_tempo && novo_tempo_LMe < maior_tempo)
+                {
+                    melhorou = true;
+                    melhor_produto_LMa = i;
+                    melhor_produto_LMe = j;
+                    melhor_linha = l;
+                    
+                    if (novo_tempo_LMa >= novo_tempo_LMe)
+                        maior_tempo = novo_tempo_LMa;
+                    else
+                        maior_tempo = novo_tempo_LMe;
+                }
+                trocaProduto(linhaMaior, linhaMenor, i, j); //desfaz a troca
+            }
         }
-        trocaProduto(linhaMenor, linhaMaior, i, indice_maior); //desfaz a troca
     }
     
     if (melhorou)
-        trocaProduto(linhaMaior, linhaMenor, indice_maior, melhor_troca);
+        trocaProduto(linhaMaior, solucao_vnd[melhor_linha], melhor_produto_LMa, melhor_produto_LMe);
     
     return melhorou;
 }
