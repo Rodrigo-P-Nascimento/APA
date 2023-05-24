@@ -50,9 +50,9 @@ int Linha::getIndiceLinha()
     return indice;
 }
 
-int Linha::getTempoParcial(unsigned indice) //retorna o tempo geral relativo ao produto, na posicao "indice" da linha, e suas transicoes
+int Linha::getTempoParcial(int indice) //retorna o tempo geral relativo ao produto, na posicao "indice" da linha, e suas transicoes
 {
-    if (produtos.size()-1 >= indice)   //verifica se o elemento pertence ao vetor
+    if (indice > produtos.size()-1 || indice < 0)   //verifica se o elemento pertence ao vetor
         return -1;
 
     int tempo = produtos.at(indice).tempo;

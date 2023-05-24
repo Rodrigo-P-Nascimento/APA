@@ -129,7 +129,7 @@ vector<Linha> heuristicaConstrutiva(){
 
     //int ultimoProduto; // Índice do último produto da menor linha
     int indiceDaMelhorTransicao; // Índice do produto que oferece o melhor custo de manutenção em relação ao último produto
-    int menorSoma = 0; // Auxiliar para a menor soma: custo do produto + tempo de manutenção
+    //int menorSoma = 0; // Auxiliar para a menor soma: custo do produto + tempo de manutenção
 
     /**
      * Parte principal do algoritmo guloso.
@@ -197,11 +197,6 @@ void trocaProduto(Linha& de, Linha& para, int indice_de, int indice_para)
     de.produtos.at(indice_de).estado = de.getIndiceLinha();
 }
 
-/*  BUG:
-terminate called after throwing an instance of 'std::out_of_range'
-what():  vector::_M_range_check: __n (which is 663590400) >= this->size() (which is 3)
-Aborted
-*/
 void swap2(vector<Linha>& solucao_vnd)
 {
     Linha& linhaMaior = maiorLinhaDeTodas(solucao_vnd);
@@ -313,17 +308,12 @@ vector<Linha> VND(int numR, vector<Linha>& solucao){
     while (k <= r){
         Linha& maiorLinha = maiorLinhaDeTodas(vndSolucao);
 
-        // k escolhe qual movimento de vizinhança é chamado
-        switch (k){
-            case 1:
-                soluF = swap1(maiorLinhaDeTodas(vndSolucao));
-                cout << "\nSWAP1!" << endl;
-                break;
-            case 2:
-                swap2(vndSolucao);
-                cout << "\nSWAP1 Falhou! Usando SWAP2!" << endl;
-                //swap2(vndSolucao);
-                break;
+        if(k == 1){//Se o k for igual a 1 temos que usar o SWAP1
+            soluF = swap1(maiorLinhaDeTodas(vndSolucao));
+            cout << "\nSWAP1!" << endl;
+        }else if(k == 2){
+            cout << "\nSWAP1 Falhou! Usando SWAP2!" << endl;
+            swap2(vndSolucao);
         }
 
         cout << "\nSoluf: " << soluF.getTempoTotal() << " vs VND: " << maiorLinha.getTempoTotal() << endl;
@@ -338,7 +328,7 @@ vector<Linha> VND(int numR, vector<Linha>& solucao){
     return vndSolucao;
 }
 
-int main(int argc, char const *argv[]) {
+int main() {
     // Lendo o arquivo de entrada
     lerEntrada();
 
