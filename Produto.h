@@ -1,8 +1,6 @@
 #ifndef Produto_H
 #define Produto_H
 
-#pragma once
-
 #define PRODUTO_DISPONIVEL -1
 
 using namespace std;
