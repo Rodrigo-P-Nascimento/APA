@@ -10,6 +10,15 @@
 #include <map>
 
 #define VALOR_OTIMO 1
+#define n10m2_A 763
+#define n10m2_B 696
+#define n15m3_A 1006
+#define n15m3_B 1055
+#define n15m4_A 688
+#define n15m4_B 784
+#define n29m4_A 1459
+#define n29m4_B 1527
+#define n29m6_A 1101
 
 using namespace std;
 
@@ -17,15 +26,15 @@ int nProdutos, mLinhas;
 vector<vector<int>> matrizDeAdj; // Matriz com os tempos de manutenção, para receber da entrada de arquivo
 vector<Produto> produtos; // Lista com a abstração completa dos produtos
 map<string, int> arquivos = {
-    {"n10m2_A.txt", VALOR_OTIMO},
-    {"n10m2_B.txt", VALOR_OTIMO},
-    {"n15m3_A.txt", VALOR_OTIMO},
-    {"n15m3_B.txt", VALOR_OTIMO},
-    {"n15m4_A.txt", VALOR_OTIMO},
-    {"n15m4_B.txt", VALOR_OTIMO},
-    {"n29m4_A.txt", VALOR_OTIMO},
-    {"n29m4_B.txt", VALOR_OTIMO},
-    {"n29m6_A.txt", VALOR_OTIMO},
+    {"n10m2_A.txt", n10m2_A},
+    {"n10m2_B.txt", n10m2_B},
+    {"n15m3_A.txt", n15m3_A},
+    {"n15m3_B.txt", n15m3_B},
+    {"n15m4_A.txt", n15m4_A},
+    {"n15m4_B.txt", n15m4_B},
+    {"n29m4_A.txt", n29m4_A},
+    {"n29m4_B.txt", n29m4_B},
+    {"n29m6_A.txt", n29m6_A},
     {"n29m6_B.txt", VALOR_OTIMO},
     {"n40m5_A.txt", VALOR_OTIMO},
     {"n40m5_B.txt", VALOR_OTIMO},
@@ -201,7 +210,7 @@ int maiorTransicao(Linha& linhaObjetivo)    //procura o produto que causa o maio
 }
 
 //realiza a troca de produtos
-void trocaProduto(Linha& L1, Linha& L2, int indice_L1, int indice_L2)
+void trocarProdutos(Linha& L1, Linha& L2, int indice_L1, int indice_L2)
 {
     Produto* aux = L2.produtos.at(indice_L2);                //guarda produto a ser trocado
 
@@ -217,7 +226,7 @@ void trocaProduto(Linha& L1, Linha& L2, int indice_L1, int indice_L2)
     }
 }
 
-bool swap2(vector<Linha>& solucao_vnd)
+bool SwapExterno(vector<Linha>& solucao_vnd)
 {
     Linha& linhaMaior = maiorLinhaDeTodas(solucao_vnd);
     int maior_tempo = linhaMaior.getTempoTotal();
@@ -239,7 +248,7 @@ bool swap2(vector<Linha>& solucao_vnd)
             //realiza trocas entre todos os produtos da menor linha para procurar a melhor
             for (size_t j = 0; j < linhaMenor.produtos.size(); j++)
             {
-                trocaProduto(linhaMaior, linhaMenor, i, j);
+                trocarProdutos(linhaMaior, linhaMenor, i, j);
                 int novo_tempo_LMa = linhaMaior.getTempoTotal();
                 int novo_tempo_LMe = linhaMenor.getTempoTotal();
 
@@ -256,13 +265,13 @@ bool swap2(vector<Linha>& solucao_vnd)
                     else
                         maior_tempo = novo_tempo_LMe;
                 }
-                trocaProduto(linhaMaior, linhaMenor, i, j); //desfaz a troca
+                trocarProdutos(linhaMaior, linhaMenor, i, j); //desfaz a troca
             }
         }
     }
     
     if (melhorou)
-        trocaProduto(linhaMaior, solucao_vnd[melhor_linha], melhor_produto_LMa, melhor_produto_LMe);
+        trocarProdutos(linhaMaior, solucao_vnd[melhor_linha], melhor_produto_LMa, melhor_produto_LMe);
     
     return melhorou;
 }
@@ -284,59 +293,57 @@ int imprimirSolucao(vector<Linha>& linhas){
         }
         cout << " | Custo = " << linhas.at(i).getTempoTotal() << endl;
     }
-    //cout << "\tCusto da maior linha (funcao objetivo): " << maiorLinhaDeTodas(linhas).getTempoTotal() << endl;
-    //cout << "\n";
     return maiorLinhaDeTodas(linhas).getTempoTotal();
 }
 
-bool swap1(Linha& LE){
+bool SwapInterno(Linha& linha){
 
-    int melhorValor = LE.getTempoTotal();;
+    int melhorValor = linha.getTempoTotal();
     int prodI = 0 , prodJ = 0;
     bool melhorou = false;
     
-    for(size_t i = 0 ; i < LE.produtos.size()-1; i++){
-        for(size_t j = i+1; j < LE.produtos.size(); j++){
+    for(size_t i = 0 ; i < linha.produtos.size()-1; i++){
+        for(size_t j = i+1; j < linha.produtos.size(); j++){
             
-            trocaProduto(LE, LE, i, j);
-            if(melhorValor > LE.getTempoTotal()){
+            trocarProdutos(linha, linha, i, j);
+            if(melhorValor > linha.getTempoTotal()){
                 prodI = i;
                 prodJ = j;
-                melhorValor = LE.getTempoTotal();
+                melhorValor = linha.getTempoTotal();
                 melhorou = true;
             }
-            trocaProduto(LE, LE, i, j);
+            trocarProdutos(linha, linha, i, j);
         }
     }
     
     if (melhorou)
-        trocaProduto(LE, LE, prodI, prodJ);
+        trocarProdutos(linha, linha, prodI, prodJ);
     
     return melhorou;
 }
 
-vector<Linha> VND(int numR, vector<Linha>& solucao){
+vector<Linha> VND(int nMovimentos, vector<Linha>& solucao){
     vector<Linha> vndSolucao = solucao;
-    int r = numR;
+    int r = nMovimentos;
     int k = 1;
-    bool melhor;
+    bool melhorou;
 
     while (k <= r){
 
         switch (k){
             case 1:
                 //cout << "\nSWAP1!" << endl;
-                melhor = swap1(maiorLinhaDeTodas(vndSolucao));
+                melhorou = SwapInterno(maiorLinhaDeTodas(vndSolucao));
                 //imprimirSolucao(vndSolucao); //! teste
                 break;
             case 2:
                 //cout << "\nSWAP1 Falhou! Usando SWAP2!" << endl;
-                melhor = swap2(vndSolucao);
+                melhorou = SwapExterno(vndSolucao);
                 //imprimirSolucao(vndSolucao); //! teste
                 break;
         }
 
-        if(melhor){
+        if(melhorou){
             k = 1;
         }else{
             k += 1;
@@ -361,10 +368,10 @@ int main() {
         vector<Linha> solucaoGulosa = heuristicaConstrutiva();
         auto fim = chrono::high_resolution_clock::now();
         auto duracao = std::chrono::duration_cast<std::chrono::milliseconds>(fim - inicio);
-        int valorDaSolucao = imprimirSolucao(solucaoGulosa);
+        float valorDaSolucao = imprimirSolucao(solucaoGulosa);
         cout << "\tValor da solucao encontrada: " << valorDaSolucao << endl;
         cout << "\tTempo de execucao: " << duracao.count() << " ms" << endl;
-        cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100.00 << endl;
+        cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100 << endl;
 
         cout << "\n";
 
