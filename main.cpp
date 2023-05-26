@@ -26,20 +26,20 @@ int nProdutos, mLinhas;
 vector<vector<int>> matrizDeAdj; // Matriz com os tempos de manutenção, para receber da entrada de arquivo
 vector<Produto> produtos; // Lista com a abstração completa dos produtos
 map<string, int> arquivos = {
-    {"n10m2_A.txt", n10m2_A},
-    {"n10m2_B.txt", n10m2_B},
-    {"n15m3_A.txt", n15m3_A},
-    {"n15m3_B.txt", n15m3_B},
-    {"n15m4_A.txt", n15m4_A},
-    {"n15m4_B.txt", n15m4_B},
-    {"n29m4_A.txt", n29m4_A},
-    {"n29m4_B.txt", n29m4_B},
-    {"n29m6_A.txt", n29m6_A},
-    {"n29m6_B.txt", VALOR_OTIMO},
-    {"n40m5_A.txt", VALOR_OTIMO},
-    {"n40m5_B.txt", VALOR_OTIMO},
-    {"n52m5_A.txt", VALOR_OTIMO},
-    {"n52m5_B.txt", VALOR_OTIMO},
+    //{"n10m2_A.txt", n10m2_A},
+    //{"n10m2_B.txt", n10m2_B},
+    //{"n15m3_A.txt", n15m3_A},
+    //{"n15m3_B.txt", n15m3_B},
+    //{"n15m4_A.txt", n15m4_A},
+    //{"n15m4_B.txt", n15m4_B},
+    //{"n29m4_A.txt", n29m4_A},
+    //{"n29m4_B.txt", n29m4_B},
+    //{"n29m6_A.txt", n29m6_A},
+    //{"n29m6_B.txt", VALOR_OTIMO},
+    //{"n40m5_A.txt", VALOR_OTIMO},
+    //{"n40m5_B.txt", VALOR_OTIMO},
+    //{"n52m5_A.txt", VALOR_OTIMO},
+    //{"n52m5_B.txt", VALOR_OTIMO},
     {"n450m16_A.txt", VALOR_OTIMO},
     {"n500m10_A.txt", VALOR_OTIMO}
 };
@@ -210,20 +210,22 @@ int maiorTransicao(Linha& linhaObjetivo)    //procura o produto que causa o maio
 }
 
 //realiza a troca de produtos
-void trocarProdutos(Linha& L1, Linha& L2, int indice_L1, int indice_L2)
+void trocarProdutos(Linha& L1, Linha& L2, int indiceProduto1, int indiceProduto2)
 {
-    Produto* aux = L2.produtos.at(indice_L2);                //guarda produto a ser trocado
+    Produto* aux = L2.produtos.at(indiceProduto2);                //guarda produto a ser trocado
+    
+    // Subtraindo o tempo dos produtos que estão sendo tirados de suas linhas originais
+    L1.tempoTotal -= L1.getTempoParcial(indiceProduto1);
+    L2.tempoTotal -= L2.getTempoParcial(indiceProduto2);
 
-    L2.produtos.at(indice_L2) = L1.produtos.at(indice_L1);  //linha destinataria recebe novo produto do remetente
-    L1.produtos.at(indice_L1) = aux;                            //linha remetente recebe antigo produto do destinatario
-
-    L1.produtos.at(indice_L1)->estado = L1.getIndiceLinha();//atualiza indice de linha dos produtos
-    L1.recalculaTempoTotal();
-
-    if(&L1 != &L2){  //caso seja feita trocas entre linhas diferentes
-        L2.recalculaTempoTotal();
-        L2.produtos.at(indice_L2)->estado = L2.getIndiceLinha();
-    }
+    // Trocando os produtos entre os objetos das linhas
+    L2.produtos.at(indiceProduto2) = L1.produtos.at(indiceProduto1);  //linha destinataria recebe novo produto do remetente
+    L1.produtos.at(indiceProduto1) = aux;                            //linha remetente recebe antigo produto do destinatario
+    L1.produtos.at(indiceProduto1)->estado = L1.getIndiceLinha();//atualiza indice de linha dos produtos
+    
+    // Atualizando os tempos totais com os novos produtos de cada linha
+    L1.tempoTotal += L1.getTempoParcial(indiceProduto1);
+    L2.tempoTotal += L2.getTempoParcial(indiceProduto2);
 }
 
 bool SwapExterno(vector<Linha>& solucao_vnd)
@@ -241,7 +243,7 @@ bool SwapExterno(vector<Linha>& solucao_vnd)
         if (l == linhaMaior.getIndiceLinha()) 
             continue;
         
-        Linha& linhaMenor = solucao_vnd[l];
+        Linha& linhaMenor = solucao_vnd.at(l);
 
         for (size_t i = 0; i < linhaMaior.produtos.size(); i++)
         {
@@ -332,14 +334,10 @@ vector<Linha> VND(int nMovimentos, vector<Linha>& solucao){
 
         switch (k){
             case 1:
-                //cout << "\nSWAP1!" << endl;
                 melhorou = SwapInterno(maiorLinhaDeTodas(vndSolucao));
-                //imprimirSolucao(vndSolucao); //! teste
                 break;
             case 2:
-                //cout << "\nSWAP1 Falhou! Usando SWAP2!" << endl;
                 melhorou = SwapExterno(vndSolucao);
-                //imprimirSolucao(vndSolucao); //! teste
                 break;
         }
 
@@ -388,8 +386,8 @@ int main() {
         
         // Separador da exibição de soluções
         cout << "\n\n";
-        for (int j = 0; j < 40; j++){
-            cout << "+-+";
+        for (int j = 0; j < 30; j++){
+            cout << "++";
         }
         cout << "\n\n";
     }

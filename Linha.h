@@ -19,10 +19,10 @@ public:
     int getIndiceLinha();
     int getTempoParcial(int produto_da_linha); //retorna o tempo geral relativo ao produto, na posicao "indice" da linha, e suas transicoes
     vector<Produto*> produtos;
+    unsigned tempoTotal;
 
 private:
     int indice;
-    unsigned tempoTotal;
     vector<vector<int>>* matrizDeAdj;
 };
 
