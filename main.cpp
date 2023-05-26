@@ -245,9 +245,10 @@ bool SwapExterno(vector<Linha>& solucao_vnd)
         // Loop que percorre todos os produtos da maior linha
         for (size_t i = 0; i < linhaMaior.produtos.size(); i++)
         {
-            // Loop que percorre cada linha atual, procurando a menor (melhor) troca possível
+            // Loop que percorre a linha atual fazer trocas, procurando a menor (melhor) possível
             for (size_t j = 0; j < linhaAtual.produtos.size(); j++)
             {
+                // Testando a troca com os produtos atuais
                 trocarProdutos(linhaMaior, linhaAtual, i, j);
                 int novo_tempo_LMa = linhaMaior.getTempoTotal();
                 int novo_tempo_LMe = linhaAtual.getTempoTotal();
@@ -265,13 +266,14 @@ bool SwapExterno(vector<Linha>& solucao_vnd)
                     else
                         maior_tempo = novo_tempo_LMe;
                 }
-                trocarProdutos(linhaMaior, linhaAtual, i, j); //desfaz a troca
+                trocarProdutos(linhaMaior, linhaAtual, i, j); // Desfaz a troca para verificar se mantém depois
             }
         }
     }
     
+    // Verificando se deve fazer a melhor troca encontrada
     if (melhorou)
-        trocarProdutos(linhaMaior, solucao_vnd[melhor_linha], melhor_produto_LMa, melhor_produto_LMe);
+        trocarProdutos(linhaMaior, solucao_vnd.at(melhor_linha), melhor_produto_LMa, melhor_produto_LMe);
     
     return melhorou;
 }
@@ -337,9 +339,11 @@ vector<Linha> VND(int nMovimentos, vector<Linha>& solucao){
         switch (k){
             case 1:
                 melhorou = SwapInterno(maiorLinhaDeTodas(vndSolucao));
+                cout << "\tApos um Swap Interno: " << maiorLinhaDeTodas(vndSolucao).getTempoTotal() << endl;
                 break;
             case 2:
                 melhorou = SwapExterno(vndSolucao);
+                cout << "\tApos um Swap Externo: " << maiorLinhaDeTodas(vndSolucao).getTempoTotal() << endl;
                 break;
         }
 
@@ -372,7 +376,7 @@ int main() {
         //imprimirSolucao(solucaoGulosa);
         cout << "\tValor da solucao encontrada: " << valorDaSolucao << endl;
         cout << "\tTempo de execucao: " << duracao.count() << " ms" << endl;
-        cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100 << endl;
+        cout << "\tGAP: " << (( (double) valorDaSolucao - (double) valorOtimo) / (double) valorOtimo) * 100.0 << endl;
 
         cout << "\n";
 
