@@ -378,7 +378,7 @@ string conversor(const chrono::nanoseconds& duracao)
     else
     {
         double duracaoNs = static_cast<double>(duracao.count());
-        oss << fixed << setprecision(2) << duracaoNs << " microsegundos";
+        oss << fixed << setprecision(2) << duracaoNs << " nanosegundos";
     }
     
     return oss.str();
