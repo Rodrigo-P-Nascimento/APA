@@ -8,6 +8,7 @@
 #include <chrono>
 #include <ctime> 
 #include <map>
+#include <iomanip>
 
 // Valores das melhores soluções encontradas de cada instância
 #define n10m2_A 763 // ótimo
@@ -34,21 +35,21 @@ vector<vector<int>> matrizDeAdj; // Matriz com os tempos de manutenção, para r
 vector<Produto> produtos; // Lista com a abstração completa dos produtos
 map<string, int> arquivos = {
     {"n10m2_A.txt", n10m2_A},
-    //{"n10m2_B.txt", n10m2_B},
-    //{"n15m3_A.txt", n15m3_A},
-    //{"n15m3_B.txt", n15m3_B},
-    //{"n15m4_A.txt", n15m4_A},
-    //{"n15m4_B.txt", n15m4_B},
-    //{"n29m4_A.txt", n29m4_A},
-    //{"n29m4_B.txt", n29m4_B},
-    //{"n29m6_A.txt", n29m6_A},
-    //{"n29m6_B.txt", n29m6_B},
-    //{"n40m5_A.txt", n40m5_A},
-    //{"n40m5_B.txt", n40m5_B},
-    //{"n52m5_A.txt", n52m5_A},
-    //{"n52m5_B.txt", n52m5_B},
-    //{"n450m16_A.txt", n450m16_A},
-    //{"n500m10_A.txt", n500m10_A}
+    {"n10m2_B.txt", n10m2_B},
+    {"n15m3_A.txt", n15m3_A},
+    {"n15m3_B.txt", n15m3_B},
+    {"n15m4_A.txt", n15m4_A},
+    {"n15m4_B.txt", n15m4_B},
+    {"n29m4_A.txt", n29m4_A},
+    {"n29m4_B.txt", n29m4_B},
+    {"n29m6_A.txt", n29m6_A},
+    {"n29m6_B.txt", n29m6_B},
+    {"n40m5_A.txt", n40m5_A},
+    {"n40m5_B.txt", n40m5_B},
+    {"n52m5_A.txt", n52m5_A},
+    {"n52m5_B.txt", n52m5_B},
+    {"n450m16_A.txt", n450m16_A},
+    {"n500m10_A.txt", n500m10_A}
 };
 
 /**
@@ -237,7 +238,7 @@ bool SwapExterno(vector<Linha>& solucao_vnd)
     for (size_t l = 0; l < solucao_vnd.size(); l++)
     {
         // Evitando que seja feita a busca de troca na maior linha
-        if (l == linhaMaior.getIndiceLinha()) 
+        if ((int)l == linhaMaior.getIndiceLinha()) 
             continue;
         
         Linha& linhaAtual = solucao_vnd.at(l);
@@ -356,6 +357,33 @@ vector<Linha> VND(int nMovimentos, vector<Linha>& solucao){
     return vndSolucao;
 }
 
+string conversor(const chrono::nanoseconds& duracao)
+{
+    ostringstream oss;
+    if (duracao >= chrono::seconds(1))
+    {
+        double duracaoS = static_cast<double>(duracao.count()) / 1'000'000'000.0;
+        oss << fixed << setprecision(2) << duracaoS << " segundos";
+    }
+    else if (duracao >= chrono::milliseconds(1))
+    {
+        double duracaoMs = static_cast<double>(duracao.count()) / 1'000'000.0;
+        oss << fixed << setprecision(2) << duracaoMs << " milisegundos";
+    }
+    else if (duracao >= chrono::microseconds(1))
+    {
+        double duracaoMcs = static_cast<double>(duracao.count()) / 1'000.0;
+        oss << fixed << setprecision(2) << duracaoMcs << " microsegundos";
+    }
+    else
+    {
+        double duracaoNs = static_cast<double>(duracao.count());
+        oss << fixed << setprecision(2) << duracaoNs << " microsegundos";
+    }
+    
+    return oss.str();
+}
+
 int main() {
     for (auto& par : arquivos){
         string nomeEntrada = par.first;
@@ -371,13 +399,13 @@ int main() {
         auto inicio = chrono::high_resolution_clock::now();
         vector<Linha> solucaoGulosa = heuristicaConstrutiva();
         auto fim = chrono::high_resolution_clock::now();
-        auto duracao = std::chrono::duration_cast<std::chrono::milliseconds>(fim - inicio);
+        auto duracao = chrono::duration_cast<std::chrono::nanoseconds>(fim - inicio);
         float valorDaSolucao = maiorLinhaDeTodas(solucaoGulosa).getTempoTotal();
+
         //imprimirSolucao(solucaoGulosa);
         cout << "\tValor da solucao encontrada: " << valorDaSolucao << endl;
-        cout << "\tTempo de execucao: " << duracao.count() << " ms" << endl;
-        cout << "\tGAP: " << (( (double) valorDaSolucao - (double) valorOtimo) / (double) valorOtimo) * 100.0 << endl;
-
+        cout << "Tempo de execução: " << conversor(duracao) << endl;
+        cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100 << endl;
         cout << "\n";
 
         // Executando e obtendo os dados do algoritmo VND
@@ -385,11 +413,12 @@ int main() {
         inicio = chrono::high_resolution_clock::now();
         vector<Linha> solucaoVND = VND(2, solucaoGulosa);
         fim = chrono::high_resolution_clock::now();
-        duracao = std::chrono::duration_cast<std::chrono::milliseconds>(fim - inicio);
+        duracao = std::chrono::duration_cast<std::chrono::nanoseconds>(fim - inicio);
         valorDaSolucao = maiorLinhaDeTodas(solucaoVND).getTempoTotal();
+        
         //imprimirSolucao(solucaoVND);
         cout << "\tValor da solucao encontrada: " << valorDaSolucao << endl;
-        cout << "\tTempo de execucao: " << duracao.count() << " ms" << endl;
+        cout << "Tempo de execução: " << conversor(duracao) << endl;
         cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100.00 << endl;
         
         // Separador da exibição de soluções
