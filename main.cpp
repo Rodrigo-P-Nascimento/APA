@@ -9,9 +9,9 @@
 #include <ctime> 
 #include <map>
 
-#define VALOR_OTIMO 1
-#define n10m2_A 763
-#define n10m2_B 696
+// Valores das melhores soluções encontradas de cada instância
+#define n10m2_A 763 // ótimo
+#define n10m2_B 696 // ótimo
 #define n15m3_A 1006
 #define n15m3_B 1055
 #define n15m4_A 688
@@ -19,6 +19,13 @@
 #define n29m4_A 1459
 #define n29m4_B 1527
 #define n29m6_A 1101
+#define n29m6_B 1043
+#define n40m5_A 447
+#define n40m5_B 581
+#define n52m5_A 7070
+#define n52m5_B 1
+#define n450m16_A 1
+#define n500m10_A 1
 
 using namespace std;
 
@@ -27,21 +34,21 @@ vector<vector<int>> matrizDeAdj; // Matriz com os tempos de manutenção, para r
 vector<Produto> produtos; // Lista com a abstração completa dos produtos
 map<string, int> arquivos = {
     {"n10m2_A.txt", n10m2_A},
-    {"n10m2_B.txt", n10m2_B},
-    {"n15m3_A.txt", n15m3_A},
-    {"n15m3_B.txt", n15m3_B},
-    {"n15m4_A.txt", n15m4_A},
-    {"n15m4_B.txt", n15m4_B},
-    {"n29m4_A.txt", n29m4_A},
-    {"n29m4_B.txt", n29m4_B},
-    {"n29m6_A.txt", n29m6_A},
-    {"n29m6_B.txt", VALOR_OTIMO},
-    {"n40m5_A.txt", VALOR_OTIMO},
-    {"n40m5_B.txt", VALOR_OTIMO},
-    {"n52m5_A.txt", VALOR_OTIMO},
-    {"n52m5_B.txt", VALOR_OTIMO},
-    {"n450m16_A.txt", VALOR_OTIMO},
-    {"n500m10_A.txt", VALOR_OTIMO}
+    //{"n10m2_B.txt", n10m2_B},
+    //{"n15m3_A.txt", n15m3_A},
+    //{"n15m3_B.txt", n15m3_B},
+    //{"n15m4_A.txt", n15m4_A},
+    //{"n15m4_B.txt", n15m4_B},
+    //{"n29m4_A.txt", n29m4_A},
+    //{"n29m4_B.txt", n29m4_B},
+    //{"n29m6_A.txt", n29m6_A},
+    //{"n29m6_B.txt", n29m6_B},
+    //{"n40m5_A.txt", n40m5_A},
+    //{"n40m5_B.txt", n40m5_B},
+    //{"n52m5_A.txt", n52m5_A},
+    //{"n52m5_B.txt", n52m5_B},
+    //{"n450m16_A.txt", n450m16_A},
+    //{"n500m10_A.txt", n500m10_A}
 };
 
 /**
