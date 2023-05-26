@@ -340,11 +340,11 @@ vector<Linha> VND(int nMovimentos, vector<Linha>& solucao){
         switch (k){
             case 1:
                 melhorou = SwapInterno(maiorLinhaDeTodas(vndSolucao));
-                cout << "\tApos um Swap Interno: " << maiorLinhaDeTodas(vndSolucao).getTempoTotal() << endl;
+                //cout << "\tApos um Swap Interno: " << maiorLinhaDeTodas(vndSolucao).getTempoTotal() << endl;
                 break;
             case 2:
                 melhorou = SwapExterno(vndSolucao);
-                cout << "\tApos um Swap Externo: " << maiorLinhaDeTodas(vndSolucao).getTempoTotal() << endl;
+                //cout << "\tApos um Swap Externo: " << maiorLinhaDeTodas(vndSolucao).getTempoTotal() << endl;
                 break;
         }
 
@@ -404,7 +404,7 @@ int main() {
 
         //imprimirSolucao(solucaoGulosa);
         cout << "\tValor da solucao encontrada: " << valorDaSolucao << endl;
-        cout << "Tempo de execução: " << conversor(duracao) << endl;
+        cout << "Tempo de execucao: " << conversor(duracao) << endl;
         cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100 << endl;
         cout << "\n";
 
@@ -418,7 +418,7 @@ int main() {
         
         //imprimirSolucao(solucaoVND);
         cout << "\tValor da solucao encontrada: " << valorDaSolucao << endl;
-        cout << "Tempo de execução: " << conversor(duracao) << endl;
+        cout << "Tempo de execucao: " << conversor(duracao) << endl;
         cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100.00 << endl;
         
         // Separador da exibição de soluções
