@@ -274,17 +274,17 @@ bool SwapExterno(vector<Linha>& solucao_vnd)
  * Retorna o valor da solução
 */
 int imprimirSolucao(vector<Linha>& linhas){
-    cout << "\n";
+    //cout << "\n";
     for (size_t i = 0; i < linhas.size(); i++){
-        cout << "\tLinha de producao " << i+1 << ": ";
+        //cout << "\tLinha de producao " << i+1 << ": ";
         
         for (size_t j = 0; j < linhas.at(i).produtos.size(); j++){
-            cout << "P" << linhas.at(i).produtos.at(j)->indice+1;
+            //cout << "P" << linhas.at(i).produtos.at(j)->indice+1;
             if (j < linhas.at(i).produtos.size()-1){
-                cout << " -> ";
+                //cout << " -> ";
             }
         }
-        cout << " | Custo = " << linhas.at(i).getTempoTotal() << endl;
+        //cout << " | Custo = " << linhas.at(i).getTempoTotal() << endl;
     }
     return maiorLinhaDeTodas(linhas).getTempoTotal();
 }
@@ -361,7 +361,8 @@ int main() {
         vector<Linha> solucaoGulosa = heuristicaConstrutiva();
         auto fim = chrono::high_resolution_clock::now();
         auto duracao = std::chrono::duration_cast<std::chrono::milliseconds>(fim - inicio);
-        float valorDaSolucao = imprimirSolucao(solucaoGulosa);
+        float valorDaSolucao = maiorLinhaDeTodas(solucaoGulosa).getTempoTotal();
+        //imprimirSolucao(solucaoGulosa);
         cout << "\tValor da solucao encontrada: " << valorDaSolucao << endl;
         cout << "\tTempo de execucao: " << duracao.count() << " ms" << endl;
         cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100 << endl;
@@ -374,7 +375,8 @@ int main() {
         vector<Linha> solucaoVND = VND(2, solucaoGulosa);
         fim = chrono::high_resolution_clock::now();
         duracao = std::chrono::duration_cast<std::chrono::milliseconds>(fim - inicio);
-        valorDaSolucao = imprimirSolucao(solucaoVND);
+        valorDaSolucao = maiorLinhaDeTodas(solucaoVND).getTempoTotal();
+        //imprimirSolucao(solucaoVND);
         cout << "\tValor da solucao encontrada: " << valorDaSolucao << endl;
         cout << "\tTempo de execucao: " << duracao.count() << " ms" << endl;
         cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100.00 << endl;
