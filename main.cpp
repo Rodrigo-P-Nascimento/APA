@@ -38,18 +38,18 @@ map<string, int> arquivos = {
     {"n10m2_B.txt", n10m2_B},
     {"n15m3_A.txt", n15m3_A},
     {"n15m3_B.txt", n15m3_B},
-    {"n15m4_A.txt", n15m4_A},
-    {"n15m4_B.txt", n15m4_B},
-    {"n29m4_A.txt", n29m4_A},
-    {"n29m4_B.txt", n29m4_B},
-    {"n29m6_A.txt", n29m6_A},
-    {"n29m6_B.txt", n29m6_B},
-    {"n40m5_A.txt", n40m5_A},
-    {"n40m5_B.txt", n40m5_B},
-    {"n52m5_A.txt", n52m5_A},
-    {"n52m5_B.txt", n52m5_B},
-    {"n450m16_A.txt", n450m16_A},
-    {"n500m10_A.txt", n500m10_A}
+    //{"n15m4_A.txt", n15m4_A},
+    //{"n15m4_B.txt", n15m4_B},
+    //{"n29m4_A.txt", n29m4_A},
+    //{"n29m4_B.txt", n29m4_B},
+    //{"n29m6_A.txt", n29m6_A},
+    //{"n29m6_B.txt", n29m6_B},
+    //{"n40m5_A.txt", n40m5_A},
+    //{"n40m5_B.txt", n40m5_B},
+    //{"n52m5_A.txt", n52m5_A},
+    //{"n52m5_B.txt", n52m5_B},
+    //{"n450m16_A.txt", n450m16_A},
+    //{"n500m10_A.txt", n500m10_A}
 };
 
 /**
@@ -340,11 +340,11 @@ vector<Linha> VND(int nMovimentos, vector<Linha>& solucao){
         switch (k){
             case 1:
                 melhorou = SwapInterno(maiorLinhaDeTodas(vndSolucao));
-                //cout << "\tApos um Swap Interno: " << maiorLinhaDeTodas(vndSolucao).getTempoTotal() << endl;
+                cout << "\tApos um Swap Interno: " << maiorLinhaDeTodas(vndSolucao).getTempoTotal() << endl;
                 break;
             case 2:
                 melhorou = SwapExterno(vndSolucao);
-                //cout << "\tApos um Swap Externo: " << maiorLinhaDeTodas(vndSolucao).getTempoTotal() << endl;
+                cout << "\tApos um Swap Externo: " << maiorLinhaDeTodas(vndSolucao).getTempoTotal() << endl;
                 break;
         }
 
