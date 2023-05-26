@@ -26,20 +26,20 @@ int nProdutos, mLinhas;
 vector<vector<int>> matrizDeAdj; // Matriz com os tempos de manutenção, para receber da entrada de arquivo
 vector<Produto> produtos; // Lista com a abstração completa dos produtos
 map<string, int> arquivos = {
-    //{"n10m2_A.txt", n10m2_A},
-    //{"n10m2_B.txt", n10m2_B},
-    //{"n15m3_A.txt", n15m3_A},
-    //{"n15m3_B.txt", n15m3_B},
-    //{"n15m4_A.txt", n15m4_A},
-    //{"n15m4_B.txt", n15m4_B},
-    //{"n29m4_A.txt", n29m4_A},
-    //{"n29m4_B.txt", n29m4_B},
-    //{"n29m6_A.txt", n29m6_A},
-    //{"n29m6_B.txt", VALOR_OTIMO},
-    //{"n40m5_A.txt", VALOR_OTIMO},
-    //{"n40m5_B.txt", VALOR_OTIMO},
-    //{"n52m5_A.txt", VALOR_OTIMO},
-    //{"n52m5_B.txt", VALOR_OTIMO},
+    {"n10m2_A.txt", n10m2_A},
+    {"n10m2_B.txt", n10m2_B},
+    {"n15m3_A.txt", n15m3_A},
+    {"n15m3_B.txt", n15m3_B},
+    {"n15m4_A.txt", n15m4_A},
+    {"n15m4_B.txt", n15m4_B},
+    {"n29m4_A.txt", n29m4_A},
+    {"n29m4_B.txt", n29m4_B},
+    {"n29m6_A.txt", n29m6_A},
+    {"n29m6_B.txt", VALOR_OTIMO},
+    {"n40m5_A.txt", VALOR_OTIMO},
+    {"n40m5_B.txt", VALOR_OTIMO},
+    {"n52m5_A.txt", VALOR_OTIMO},
+    {"n52m5_B.txt", VALOR_OTIMO},
     {"n450m16_A.txt", VALOR_OTIMO},
     {"n500m10_A.txt", VALOR_OTIMO}
 };
@@ -144,7 +144,7 @@ Linha& maiorLinhaDeTodas(vector<Linha>& linhas){
 */
 vector<Linha> heuristicaConstrutiva(){
     int produtosRestantes = produtos.size(); // Número de produtos que não foram adicionados à solução
-    vector<Linha> linhas; // Estrutura de dados (floresta com matriz de adjacência) da solução vazia
+    vector<Linha> linhas; // Estrutura de dados (floresta com matriz de adjacência) da solução, que inicia vazia
     
     for (int i = 0; i < mLinhas; i++)
         linhas.push_back(Linha(&matrizDeAdj, i));
@@ -193,23 +193,7 @@ vector<Linha> heuristicaConstrutiva(){
     return linhas; // Retornando os vértices da solução: um grafo desconexo, não simétrico e acíclico; em outras palavras, uma floresta que é implementada com uma matriz de adjacência
 }
 
-int maiorTransicao(Linha& linhaObjetivo)    //procura o produto que causa o maior custo em transicoes na linha
-{
-    int maiorSoma = 0;
-    int indiceMaiorSoma;
-    for (size_t i = 0; i < linhaObjetivo.produtos.size(); i++) 
-    {
-        int soma = linhaObjetivo.getTempoParcial(i);
-        if (maiorSoma < soma)
-        {
-            maiorSoma = soma;
-            indiceMaiorSoma = i;
-        }
-    }
-    return indiceMaiorSoma;
-}
-
-//realiza a troca de produtos
+// Realiza a troca de produtos entre duas linhas
 void trocarProdutos(Linha& L1, Linha& L2, int indiceProduto1, int indiceProduto2)
 {
     Produto* aux = L2.produtos.at(indiceProduto2);                //guarda produto a ser trocado
@@ -228,6 +212,11 @@ void trocarProdutos(Linha& L1, Linha& L2, int indiceProduto1, int indiceProduto2
     L2.tempoTotal += L2.getTempoParcial(indiceProduto2);
 }
 
+/**
+ * Movimento de Vizinhança que escolhe a melhor troca possível de produtos
+ * entre duas linhas, sendo uma delas a que custa mais tempo de todas 
+ * (a maior representa a função objetivo)
+*/
 bool SwapExterno(vector<Linha>& solucao_vnd)
 {
     Linha& linhaMaior = maiorLinhaDeTodas(solucao_vnd);
@@ -237,22 +226,24 @@ bool SwapExterno(vector<Linha>& solucao_vnd)
     int melhor_produto_LMe;     //indice da melhor troca da linhaMenor
     int melhor_linha;           //indice da melhor linhaMenor
 
-
-    for (size_t l = 0; l < mLinhas; l++)
+    // Loop que percorre todas as linhas de produção
+    for (size_t l = 0; l < solucao_vnd.size(); l++)
     {
+        // Evitando que seja feita a busca de troca na maior linha
         if (l == linhaMaior.getIndiceLinha()) 
             continue;
         
-        Linha& linhaMenor = solucao_vnd.at(l);
+        Linha& linhaAtual = solucao_vnd.at(l);
 
+        // Loop que percorre todos os produtos da maior linha
         for (size_t i = 0; i < linhaMaior.produtos.size(); i++)
         {
-            //realiza trocas entre todos os produtos da menor linha para procurar a melhor
-            for (size_t j = 0; j < linhaMenor.produtos.size(); j++)
+            // Loop que percorre cada linha atual, procurando a menor (melhor) troca possível
+            for (size_t j = 0; j < linhaAtual.produtos.size(); j++)
             {
-                trocarProdutos(linhaMaior, linhaMenor, i, j);
+                trocarProdutos(linhaMaior, linhaAtual, i, j);
                 int novo_tempo_LMa = linhaMaior.getTempoTotal();
-                int novo_tempo_LMe = linhaMenor.getTempoTotal();
+                int novo_tempo_LMe = linhaAtual.getTempoTotal();
 
                 //se apos a troca o tempo for melhor que o anterior em ambas as linhas, salva informacoes de troca e tempo
                 if(novo_tempo_LMa < maior_tempo && novo_tempo_LMe < maior_tempo)
@@ -267,7 +258,7 @@ bool SwapExterno(vector<Linha>& solucao_vnd)
                     else
                         maior_tempo = novo_tempo_LMe;
                 }
-                trocarProdutos(linhaMaior, linhaMenor, i, j); //desfaz a troca
+                trocarProdutos(linhaMaior, linhaAtual, i, j); //desfaz a troca
             }
         }
     }
@@ -298,6 +289,10 @@ int imprimirSolucao(vector<Linha>& linhas){
     return maiorLinhaDeTodas(linhas).getTempoTotal();
 }
 
+/**
+ * Movimento de Vizinhança que escolhe a melhor troca possível de dois 
+ * produtos na maior linha (a maior representa a função objetivo)
+*/
 bool SwapInterno(Linha& linha){
 
     int melhorValor = linha.getTempoTotal();
@@ -360,7 +355,7 @@ int main() {
         lerEntrada(caminhoDaEntrada);
         cout << "Instancia: " << par.first << " | Solucao Otima: " << par.second << endl;
 
-        // Execução e dados do algoritmo guloso
+        // Executando e obtendo os dados do algoritmo guloso
         cout << "\n\tSolucao da Heuristica Construtiva:" << endl;
         auto inicio = chrono::high_resolution_clock::now();
         vector<Linha> solucaoGulosa = heuristicaConstrutiva();
@@ -373,7 +368,7 @@ int main() {
 
         cout << "\n";
 
-        // Execução e dados do algoritmo VND
+        // Executando e obtendo os dados do algoritmo VND
         cout << "\tSolucao do VND:" << endl;
         inicio = chrono::high_resolution_clock::now();
         vector<Linha> solucaoVND = VND(2, solucaoGulosa);
