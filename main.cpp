@@ -34,22 +34,22 @@ int nProdutos, mLinhas;
 vector<vector<int>> matrizDeAdj; // Matriz com os tempos de manutenção, para receber da entrada de arquivo
 vector<Produto> produtos; // Lista com a abstração completa dos produtos
 map<string, int> arquivos = {
-    {"n10m2_A.txt", n10m2_A},
-    {"n10m2_B.txt", n10m2_B},
-    {"n15m3_A.txt", n15m3_A},
-    {"n15m3_B.txt", n15m3_B},
+    //{"n10m2_A.txt", n10m2_A},
+    //{"n10m2_B.txt", n10m2_B},
+    //{"n15m3_A.txt", n15m3_A},
+    //{"n15m3_B.txt", n15m3_B},
     //{"n15m4_A.txt", n15m4_A},
     //{"n15m4_B.txt", n15m4_B},
     //{"n29m4_A.txt", n29m4_A},
     //{"n29m4_B.txt", n29m4_B},
     //{"n29m6_A.txt", n29m6_A},
-    //{"n29m6_B.txt", n29m6_B},
-    //{"n40m5_A.txt", n40m5_A},
-    //{"n40m5_B.txt", n40m5_B},
-    //{"n52m5_A.txt", n52m5_A},
-    //{"n52m5_B.txt", n52m5_B},
-    //{"n450m16_A.txt", n450m16_A},
-    //{"n500m10_A.txt", n500m10_A}
+    {"n29m6_B.txt", n29m6_B},
+    {"n40m5_A.txt", n40m5_A},
+    {"n40m5_B.txt", n40m5_B},
+    {"n52m5_A.txt", n52m5_A},
+    {"n52m5_B.txt", n52m5_B},
+    {"n450m16_A.txt", n450m16_A},
+    {"n500m10_A.txt", n500m10_A}
 };
 
 /**
@@ -361,22 +361,22 @@ string conversor(const chrono::nanoseconds& duracao)
     if (duracao >= chrono::seconds(1))
     {
         double duracaoS = static_cast<double>(duracao.count()) / 1'000'000'000.0;
-        oss << fixed << setprecision(2) << duracaoS << " segundos";
+        oss << fixed << setprecision(2) << duracaoS << " s";
     }
     else if (duracao >= chrono::milliseconds(1))
     {
         double duracaoMs = static_cast<double>(duracao.count()) / 1'000'000.0;
-        oss << fixed << setprecision(2) << duracaoMs << " milisegundos";
+        oss << fixed << setprecision(2) << duracaoMs << " ms";
     }
     else if (duracao >= chrono::microseconds(1))
     {
         double duracaoMcs = static_cast<double>(duracao.count()) / 1'000.0;
-        oss << fixed << setprecision(2) << duracaoMcs << " microsegundos";
+        oss << fixed << setprecision(2) << duracaoMcs << " us";
     }
     else
     {
         double duracaoNs = static_cast<double>(duracao.count());
-        oss << fixed << setprecision(2) << duracaoNs << " nanosegundos";
+        oss << fixed << setprecision(2) << duracaoNs << " ns";
     }
     
     return oss.str();
@@ -402,7 +402,7 @@ int main() {
 
         //imprimirSolucao(solucaoGulosa);
         cout << "\tValor da solucao encontrada: " << valorDaSolucao << endl;
-        cout << "Tempo de execucao: " << conversor(duracao) << endl;
+        cout << "\tTempo de execucao: " << conversor(duracao) << endl;
         cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100 << endl;
         cout << "\n";
 
