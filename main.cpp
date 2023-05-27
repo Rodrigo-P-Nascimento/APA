@@ -284,17 +284,17 @@ bool SwapExterno(vector<Linha>& solucao_vnd)
  * Retorna o valor da solução
 */
 int imprimirSolucao(vector<Linha>& linhas){
-    //cout << "\n";
+    cout << "\n";
     for (size_t i = 0; i < linhas.size(); i++){
-        //cout << "\tLinha de producao " << i+1 << ": ";
+        cout << "\tLinha de producao " << i+1 << ": ";
         
         for (size_t j = 0; j < linhas.at(i).produtos.size(); j++){
-            //cout << "P" << linhas.at(i).produtos.at(j)->indice+1;
+            cout << "P" << linhas.at(i).produtos.at(j)->indice+1;
             if (j < linhas.at(i).produtos.size()-1){
-                //cout << " -> ";
+                cout << " -> ";
             }
         }
-        //cout << " | Custo = " << linhas.at(i).getTempoTotal() << endl;
+        cout << " | Custo = " << linhas.at(i).getTempoTotal() << endl;
     }
     return maiorLinhaDeTodas(linhas).getTempoTotal();
 }
@@ -340,11 +340,9 @@ vector<Linha> VND(int nMovimentos, vector<Linha>& solucao){
         switch (k){
             case 1:
                 melhorou = SwapInterno(maiorLinhaDeTodas(vndSolucao));
-                cout << "\tApos um Swap Interno: " << maiorLinhaDeTodas(vndSolucao).getTempoTotal() << endl;
                 break;
             case 2:
                 melhorou = SwapExterno(vndSolucao);
-                cout << "\tApos um Swap Externo: " << maiorLinhaDeTodas(vndSolucao).getTempoTotal() << endl;
                 break;
         }
 
