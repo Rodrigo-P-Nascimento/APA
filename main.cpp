@@ -24,9 +24,9 @@
 #define n40m5_A 447
 #define n40m5_B 581
 #define n52m5_A 7070
-#define n52m5_B 1
-#define n450m16_A 1
-#define n500m10_A 1
+#define n52m5_B 6924
+#define n450m16_A 4750
+#define n500m10_A 5608
 
 using namespace std;
 
@@ -43,9 +43,9 @@ map<string, int> arquivos = {
     //{"n29m4_A.txt", n29m4_A},
     //{"n29m4_B.txt", n29m4_B},
     //{"n29m6_A.txt", n29m6_A},
-    {"n29m6_B.txt", n29m6_B},
-    {"n40m5_A.txt", n40m5_A},
-    {"n40m5_B.txt", n40m5_B},
+    //{"n29m6_B.txt", n29m6_B},
+    //{"n40m5_A.txt", n40m5_A},
+    //{"n40m5_B.txt", n40m5_B},
     {"n52m5_A.txt", n52m5_A},
     {"n52m5_B.txt", n52m5_B},
     {"n450m16_A.txt", n450m16_A},
