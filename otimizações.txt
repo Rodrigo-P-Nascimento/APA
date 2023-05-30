@@ -1,4 +1,0 @@
-
-1ª) Porque precisa declarar uma variável do tipo produto na linha 60 da main.cpp? Não poderiamos somente usar um "produtos.at(j).tempo"?
-2ª) O mesmo ocorre na linha 77.
-3ª) Poderiamos apenas deixar o "#pragma once" em vez do "#ifndef #define" no arquivos de cabeçalho, já deixar os dois seria "Redundante"...
