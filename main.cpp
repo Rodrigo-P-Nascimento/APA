@@ -34,18 +34,18 @@ int nProdutos, mLinhas;
 vector<vector<int>> matrizDeAdj; // Matriz com os tempos de manutenção, para receber da entrada de arquivo
 vector<Produto> produtos; // Lista com a abstração completa dos produtos
 map<string, int> arquivos = {
-    //{"n10m2_A.txt", n10m2_A},
-    //{"n10m2_B.txt", n10m2_B},
-    //{"n15m3_A.txt", n15m3_A},
-    //{"n15m3_B.txt", n15m3_B},
-    //{"n15m4_A.txt", n15m4_A},
-    //{"n15m4_B.txt", n15m4_B},
-    //{"n29m4_A.txt", n29m4_A},
-    //{"n29m4_B.txt", n29m4_B},
-    //{"n29m6_A.txt", n29m6_A},
-    //{"n29m6_B.txt", n29m6_B},
-    //{"n40m5_A.txt", n40m5_A},
-    //{"n40m5_B.txt", n40m5_B},
+    {"n10m2_A.txt", n10m2_A},
+    {"n10m2_B.txt", n10m2_B},
+    {"n15m3_A.txt", n15m3_A},
+    {"n15m3_B.txt", n15m3_B},
+    {"n15m4_A.txt", n15m4_A},
+    {"n15m4_B.txt", n15m4_B},
+    {"n29m4_A.txt", n29m4_A},
+    {"n29m4_B.txt", n29m4_B},
+    {"n29m6_A.txt", n29m6_A},
+    {"n29m6_B.txt", n29m6_B},
+    {"n40m5_A.txt", n40m5_A},
+    {"n40m5_B.txt", n40m5_B},
     {"n52m5_A.txt", n52m5_A},
     {"n52m5_B.txt", n52m5_B},
     {"n450m16_A.txt", n450m16_A},
@@ -238,7 +238,7 @@ bool SwapExterno(vector<Linha>& solucao_vnd)
     for (size_t l = 0; l < solucao_vnd.size(); l++)
     {
         // Evitando que seja feita a busca de troca na maior linha
-        if ((int)l == linhaMaior.getIndiceLinha()) 
+        if ((int) l == linhaMaior.getIndiceLinha()) 
             continue;
         
         Linha& linhaAtual = solucao_vnd.at(l);
@@ -329,6 +329,14 @@ bool SwapInterno(Linha& linha){
     return melhorou;
 }
 
+/**
+ * Algoritmo de Busca Local - Variable Neighborhood Descent (VND) -
+ * com 2 Movimentos de Vizinhança implementados:
+ * 
+ * -- SwapInterno()
+ * -- SwapExterno()
+ * 
+*/
 vector<Linha> VND(int nMovimentos, vector<Linha>& solucao){
     vector<Linha> vndSolucao = solucao;
     int r = nMovimentos;
@@ -339,10 +347,10 @@ vector<Linha> VND(int nMovimentos, vector<Linha>& solucao){
 
         switch (k){
             case 1:
-                melhorou = SwapInterno(maiorLinhaDeTodas(vndSolucao));
+                melhorou = SwapInterno(maiorLinhaDeTodas(vndSolucao)); // O(p^2)
                 break;
             case 2:
-                melhorou = SwapExterno(vndSolucao);
+                melhorou = SwapExterno(vndSolucao); // O(p^3)
                 break;
         }
 
@@ -355,6 +363,7 @@ vector<Linha> VND(int nMovimentos, vector<Linha>& solucao){
     return vndSolucao;
 }
 
+// Retorna a string com o tempo e sua unidade na melhor escala
 string conversor(const chrono::nanoseconds& duracao)
 {
     ostringstream oss;
@@ -383,6 +392,8 @@ string conversor(const chrono::nanoseconds& duracao)
 }
 
 int main() {
+
+    // Executando todas as instâncias de entrada
     for (auto& par : arquivos){
         string nomeEntrada = par.first;
         int valorOtimo = par.second;
