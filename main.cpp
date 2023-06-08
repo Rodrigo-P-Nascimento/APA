@@ -34,7 +34,7 @@ int nProdutos, mLinhas;
 vector<vector<int>> matrizDeAdj; // Matriz com os tempos de manutenção, para receber da entrada de arquivo
 vector<Produto> produtos; // Lista com a abstração completa dos produtos
 map<string, int> arquivos = {
-    //{"entrada.txt", 1000},
+    {"entrada.txt", 1000},
     //{"n10m2_A.txt", n10m2_A},
     //{"n10m2_B.txt", n10m2_B},
     //{"n15m3_A.txt", n15m3_A},
@@ -49,7 +49,7 @@ map<string, int> arquivos = {
     //{"n40m5_B.txt", n40m5_B},
     //{"n52m5_A.txt", n52m5_A},
     //{"n52m5_B.txt", n52m5_B},
-    {"n450m16_A.txt", n450m16_A},
+    {"n450m16_A.txt", n450m16_A}
     //{"n500m10_A.txt", n500m10_A}
 };
 
@@ -213,11 +213,17 @@ void trocarProdutos(Linha& L1, Linha& L2, int indiceProduto1, int indiceProduto2
     //cout << "\tProduto " << L1.produtos[indiceProduto1]->indice << " = " << L1.getTempoParcial(indiceProduto1) << " | Produto " << L2.produtos[indiceProduto2]->indice << " = " << L1.getTempoParcial(indiceProduto2) << endl;
     //cout << "\tTempo Total L1 = " << L1.tempoTotal << " | Tempo Total L2 = " << L2.tempoTotal << endl;
 
-    //L1.tempoTotal -= L1.getTempoParcial(indiceProduto1);
-    //L2.tempoTotal -= L2.getTempoParcial(indiceProduto2);
+    L1.tempoTotal -= L1.getTempoParcial(indiceProduto1);
+    L2.tempoTotal -= L2.getTempoParcial(indiceProduto2);
     //cout << "\n\tDEPOIS DE DESCONTAR:" << endl;
     //cout << "\tTempo Total L1 = " << L1.tempoTotal << " | Tempo Total L2 = " << L2.tempoTotal << endl;
 
+    if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == 1){
+        L2.tempoTotal += matrizDeAdj[L2.produtos.at(indiceProduto2)->indice][L2.produtos.at(indiceProduto1)->indice];
+    }else if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == -1){
+        L2.tempoTotal += matrizDeAdj[L2.produtos.at(indiceProduto1)->indice][L2.produtos.at(indiceProduto2)->indice];
+    }
+    /*
     if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == 1){
         L2.tempoTotal -= L2.getTempoParcial(indiceProduto2);
         L2.tempoTotal -= L2.produtos[indiceProduto1]->tempo;
@@ -232,6 +238,7 @@ void trocarProdutos(Linha& L1, Linha& L2, int indiceProduto1, int indiceProduto2
         L1.tempoTotal -= L1.getTempoParcial(indiceProduto1);
         L2.tempoTotal -= L2.getTempoParcial(indiceProduto2);
     }
+    */
 
     // Trocando os produtos entre os objetos das linhas
     L2.produtos.at(indiceProduto2) = L1.produtos.at(indiceProduto1);  //linha destinataria recebe novo produto do remetente
@@ -239,22 +246,13 @@ void trocarProdutos(Linha& L1, Linha& L2, int indiceProduto1, int indiceProduto2
     L1.produtos.at(indiceProduto1)->estado = L1.getIndiceLinha();//atualiza indice de linha dos produtos
     
     // Atualizando os tempos totais com os novos produtos de cada linha
-    //L1.tempoTotal += L1.getTempoParcial(indiceProduto1);
-    //L2.tempoTotal += L2.getTempoParcial(indiceProduto2);
-
+    L1.tempoTotal += L1.getTempoParcial(indiceProduto1);
+    L2.tempoTotal += L2.getTempoParcial(indiceProduto2);
+    
     if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == 1){
-        L2.tempoTotal += L2.getTempoParcial(indiceProduto2);
-        L2.tempoTotal += L2.produtos[indiceProduto1]->tempo;
-        if (indiceProduto1+1 <= L2.produtos.size()-1)
-            L2.tempoTotal += matrizDeAdj[indiceProduto1][indiceProduto1+1];
+        L2.tempoTotal -= matrizDeAdj[L2.produtos.at(indiceProduto2)->indice][L2.produtos.at(indiceProduto1)->indice];
     }else if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == -1){
-        L2.tempoTotal += L2.getTempoParcial(indiceProduto1);
-        L2.tempoTotal += L2.produtos[indiceProduto2]->tempo;
-        if (indiceProduto1+1 <= L2.produtos.size()-1)
-            L2.tempoTotal += matrizDeAdj[indiceProduto2][indiceProduto2+1];
-    }else{
-        L1.tempoTotal += L1.getTempoParcial(indiceProduto1);
-        L2.tempoTotal += L2.getTempoParcial(indiceProduto2);
+        L2.tempoTotal -= matrizDeAdj[L2.produtos.at(indiceProduto1)->indice][L2.produtos.at(indiceProduto2)->indice];
     }
     
     //cout << "\n\tDEPOIS DA TROCA: " << endl;
