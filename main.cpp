@@ -209,36 +209,15 @@ void trocarProdutos(Linha& L1, Linha& L2, int indiceProduto1, int indiceProduto2
     Produto* aux = L2.produtos.at(indiceProduto2);                //guarda produto a ser trocado
     
     // Subtraindo o tempo dos produtos que estão sendo tirados de suas linhas originais
-    //cout << "\n\tANTES DA TROCA: " << endl;
-    //cout << "\tProduto " << L1.produtos[indiceProduto1]->indice << " = " << L1.getTempoParcial(indiceProduto1) << " | Produto " << L2.produtos[indiceProduto2]->indice << " = " << L1.getTempoParcial(indiceProduto2) << endl;
-    //cout << "\tTempo Total L1 = " << L1.tempoTotal << " | Tempo Total L2 = " << L2.tempoTotal << endl;
-
     L1.tempoTotal -= L1.getTempoParcial(indiceProduto1);
     L2.tempoTotal -= L2.getTempoParcial(indiceProduto2);
-    //cout << "\n\tDEPOIS DE DESCONTAR:" << endl;
-    //cout << "\tTempo Total L1 = " << L1.tempoTotal << " | Tempo Total L2 = " << L2.tempoTotal << endl;
 
+    // CORREÇÃO
     if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == 1){
         L2.tempoTotal += matrizDeAdj[L2.produtos.at(indiceProduto2)->indice][L2.produtos.at(indiceProduto1)->indice];
     }else if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == -1){
         L2.tempoTotal += matrizDeAdj[L2.produtos.at(indiceProduto1)->indice][L2.produtos.at(indiceProduto2)->indice];
     }
-    /*
-    if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == 1){
-        L2.tempoTotal -= L2.getTempoParcial(indiceProduto2);
-        L2.tempoTotal -= L2.produtos[indiceProduto1]->tempo;
-        if (indiceProduto1+1 <= L2.produtos.size()-1)
-            L2.tempoTotal -= matrizDeAdj[indiceProduto1][indiceProduto1+1];
-    }else if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == -1){
-        L2.tempoTotal -= L2.getTempoParcial(indiceProduto1);
-        L2.tempoTotal -= L2.produtos[indiceProduto2]->tempo;
-        if (indiceProduto1+1 <= L2.produtos.size()-1)
-            L2.tempoTotal -= matrizDeAdj[indiceProduto2][indiceProduto2+1];
-    }else{
-        L1.tempoTotal -= L1.getTempoParcial(indiceProduto1);
-        L2.tempoTotal -= L2.getTempoParcial(indiceProduto2);
-    }
-    */
 
     // Trocando os produtos entre os objetos das linhas
     L2.produtos.at(indiceProduto2) = L1.produtos.at(indiceProduto1);  //linha destinataria recebe novo produto do remetente
@@ -249,15 +228,12 @@ void trocarProdutos(Linha& L1, Linha& L2, int indiceProduto1, int indiceProduto2
     L1.tempoTotal += L1.getTempoParcial(indiceProduto1);
     L2.tempoTotal += L2.getTempoParcial(indiceProduto2);
     
+    // CORREÇÃO
     if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == 1){
         L2.tempoTotal -= matrizDeAdj[L2.produtos.at(indiceProduto2)->indice][L2.produtos.at(indiceProduto1)->indice];
     }else if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == -1){
         L2.tempoTotal -= matrizDeAdj[L2.produtos.at(indiceProduto1)->indice][L2.produtos.at(indiceProduto2)->indice];
     }
-    
-    //cout << "\n\tDEPOIS DA TROCA: " << endl;
-    //cout << "\tProduto " << L1.produtos[indiceProduto1]->indice << " = " << L1.getTempoParcial(indiceProduto1) << " | Produto " << L2.produtos[indiceProduto2]->indice << " = " << L1.getTempoParcial(indiceProduto2) << endl;
-    //cout << "\tTempo Total L1 = " << L1.tempoTotal << " | Tempo Total L2 = " << L2.tempoTotal << endl;
     
     /*
     Produto* aux = L2.produtos.at(indiceProduto2);                //guarda produto a ser trocado
