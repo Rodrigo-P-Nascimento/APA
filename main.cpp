@@ -34,22 +34,23 @@ int nProdutos, mLinhas;
 vector<vector<int>> matrizDeAdj; // Matriz com os tempos de manutenção, para receber da entrada de arquivo
 vector<Produto> produtos; // Lista com a abstração completa dos produtos
 map<string, int> arquivos = {
-    {"n10m2_A.txt", n10m2_A},
-    {"n10m2_B.txt", n10m2_B},
-    {"n15m3_A.txt", n15m3_A},
-    {"n15m3_B.txt", n15m3_B},
-    {"n15m4_A.txt", n15m4_A},
-    {"n15m4_B.txt", n15m4_B},
-    {"n29m4_A.txt", n29m4_A},
-    {"n29m4_B.txt", n29m4_B},
-    {"n29m6_A.txt", n29m6_A},
-    {"n29m6_B.txt", n29m6_B},
-    {"n40m5_A.txt", n40m5_A},
-    {"n40m5_B.txt", n40m5_B},
-    {"n52m5_A.txt", n52m5_A},
-    {"n52m5_B.txt", n52m5_B},
+    //{"entrada.txt", 1000},
+    //{"n10m2_A.txt", n10m2_A},
+    //{"n10m2_B.txt", n10m2_B},
+    //{"n15m3_A.txt", n15m3_A},
+    //{"n15m3_B.txt", n15m3_B},
+    //{"n15m4_A.txt", n15m4_A}
+    //{"n15m4_B.txt", n15m4_B}
+    //{"n29m4_A.txt", n29m4_A},
+    //{"n29m4_B.txt", n29m4_B},
+    //{"n29m6_A.txt", n29m6_A},
+    //{"n29m6_B.txt", n29m6_B},
+    //{"n40m5_A.txt", n40m5_A},
+    //{"n40m5_B.txt", n40m5_B},
+    //{"n52m5_A.txt", n52m5_A},
+    //{"n52m5_B.txt", n52m5_B},
     {"n450m16_A.txt", n450m16_A},
-    {"n500m10_A.txt", n500m10_A}
+    //{"n500m10_A.txt", n500m10_A}
 };
 
 /**
@@ -204,11 +205,33 @@ vector<Linha> heuristicaConstrutiva(){
 // Realiza a troca de produtos entre duas linhas
 void trocarProdutos(Linha& L1, Linha& L2, int indiceProduto1, int indiceProduto2)
 {
+    
     Produto* aux = L2.produtos.at(indiceProduto2);                //guarda produto a ser trocado
     
     // Subtraindo o tempo dos produtos que estão sendo tirados de suas linhas originais
-    L1.tempoTotal -= L1.getTempoParcial(indiceProduto1);
-    L2.tempoTotal -= L2.getTempoParcial(indiceProduto2);
+    //cout << "\n\tANTES DA TROCA: " << endl;
+    //cout << "\tProduto " << L1.produtos[indiceProduto1]->indice << " = " << L1.getTempoParcial(indiceProduto1) << " | Produto " << L2.produtos[indiceProduto2]->indice << " = " << L1.getTempoParcial(indiceProduto2) << endl;
+    //cout << "\tTempo Total L1 = " << L1.tempoTotal << " | Tempo Total L2 = " << L2.tempoTotal << endl;
+
+    //L1.tempoTotal -= L1.getTempoParcial(indiceProduto1);
+    //L2.tempoTotal -= L2.getTempoParcial(indiceProduto2);
+    //cout << "\n\tDEPOIS DE DESCONTAR:" << endl;
+    //cout << "\tTempo Total L1 = " << L1.tempoTotal << " | Tempo Total L2 = " << L2.tempoTotal << endl;
+
+    if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == 1){
+        L2.tempoTotal -= L2.getTempoParcial(indiceProduto2);
+        L2.tempoTotal -= L2.produtos[indiceProduto1]->tempo;
+        if (indiceProduto1+1 <= L2.produtos.size()-1)
+            L2.tempoTotal -= matrizDeAdj[indiceProduto1][indiceProduto1+1];
+    }else if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == -1){
+        L2.tempoTotal -= L2.getTempoParcial(indiceProduto1);
+        L2.tempoTotal -= L2.produtos[indiceProduto2]->tempo;
+        if (indiceProduto1+1 <= L2.produtos.size()-1)
+            L2.tempoTotal -= matrizDeAdj[indiceProduto2][indiceProduto2+1];
+    }else{
+        L1.tempoTotal -= L1.getTempoParcial(indiceProduto1);
+        L2.tempoTotal -= L2.getTempoParcial(indiceProduto2);
+    }
 
     // Trocando os produtos entre os objetos das linhas
     L2.produtos.at(indiceProduto2) = L1.produtos.at(indiceProduto1);  //linha destinataria recebe novo produto do remetente
@@ -216,8 +239,42 @@ void trocarProdutos(Linha& L1, Linha& L2, int indiceProduto1, int indiceProduto2
     L1.produtos.at(indiceProduto1)->estado = L1.getIndiceLinha();//atualiza indice de linha dos produtos
     
     // Atualizando os tempos totais com os novos produtos de cada linha
-    L1.tempoTotal += L1.getTempoParcial(indiceProduto1);
-    L2.tempoTotal += L2.getTempoParcial(indiceProduto2);
+    //L1.tempoTotal += L1.getTempoParcial(indiceProduto1);
+    //L2.tempoTotal += L2.getTempoParcial(indiceProduto2);
+
+    if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == 1){
+        L2.tempoTotal += L2.getTempoParcial(indiceProduto2);
+        L2.tempoTotal += L2.produtos[indiceProduto1]->tempo;
+        if (indiceProduto1+1 <= L2.produtos.size()-1)
+            L2.tempoTotal += matrizDeAdj[indiceProduto1][indiceProduto1+1];
+    }else if (&L1 == &L2 && indiceProduto1 - indiceProduto2 == -1){
+        L2.tempoTotal += L2.getTempoParcial(indiceProduto1);
+        L2.tempoTotal += L2.produtos[indiceProduto2]->tempo;
+        if (indiceProduto1+1 <= L2.produtos.size()-1)
+            L2.tempoTotal += matrizDeAdj[indiceProduto2][indiceProduto2+1];
+    }else{
+        L1.tempoTotal += L1.getTempoParcial(indiceProduto1);
+        L2.tempoTotal += L2.getTempoParcial(indiceProduto2);
+    }
+    
+    //cout << "\n\tDEPOIS DA TROCA: " << endl;
+    //cout << "\tProduto " << L1.produtos[indiceProduto1]->indice << " = " << L1.getTempoParcial(indiceProduto1) << " | Produto " << L2.produtos[indiceProduto2]->indice << " = " << L1.getTempoParcial(indiceProduto2) << endl;
+    //cout << "\tTempo Total L1 = " << L1.tempoTotal << " | Tempo Total L2 = " << L2.tempoTotal << endl;
+    
+    /*
+    Produto* aux = L2.produtos.at(indiceProduto2);                //guarda produto a ser trocado
+
+    L2.produtos.at(indiceProduto2) = L1.produtos.at(indiceProduto1);  //linha destinataria recebe novo produto do remetente
+    L1.produtos.at(indiceProduto1) = aux;                            //linha remetente recebe antigo produto do destinatario
+
+    L1.produtos.at(indiceProduto1)->estado = L1.getIndiceLinha();//atualiza indice de linha dos produtos
+    L1.recalculaTempoTotal();
+
+    if(&L1 != &L2){  //caso seja feita trocas entre linhas diferentes
+        L2.recalculaTempoTotal();
+        L2.produtos.at(indiceProduto2)->estado = L2.getIndiceLinha();
+    }
+    */
 }
 
 /**
@@ -285,16 +342,24 @@ bool SwapExterno(vector<Linha>& solucao_vnd)
 */
 int imprimirSolucao(vector<Linha>& linhas){
     cout << "\n";
+    int tempoTotal = 0;
     for (size_t i = 0; i < linhas.size(); i++){
         cout << "\tLinha de producao " << i+1 << ": ";
-        
+        tempoTotal = 0;
         for (size_t j = 0; j < linhas.at(i).produtos.size(); j++){
-            cout << "P" << linhas.at(i).produtos.at(j)->indice+1;
+            //cout << "P" << linhas.at(i).produtos.at(j)->indice+1;
             if (j < linhas.at(i).produtos.size()-1){
-                cout << " -> ";
+                //cout << " -> ";
+            }
+            //cout << "Tempo do produto " << linhas[i].produtos[j]->indice << " = " << linhas[i].produtos[j]->tempo << endl;
+            tempoTotal += linhas[i].produtos[j]->tempo;
+            if (j < linhas.at(i).produtos.size()-1){
+                tempoTotal += matrizDeAdj[linhas[i].produtos[j]->indice][linhas[i].produtos[j+1]->indice];
+                //cout << "Tempo de manutencao ate o seguinte (" << linhas[i].produtos[j+1]->indice << ") = " << matrizDeAdj[linhas[i].produtos[j]->indice][linhas[i].produtos[j+1]->indice] << endl;
             }
         }
-        cout << " | Custo = " << linhas.at(i).getTempoTotal() << endl;
+        cout << "\n\t-> Custo calculado na mao = " << tempoTotal << endl;
+        cout << "\t-> Custo da 'getTempoTotal()' = " << linhas.at(i).getTempoTotal() << endl << endl;
     }
     return maiorLinhaDeTodas(linhas).getTempoTotal();
 }
@@ -348,9 +413,15 @@ vector<Linha> VND(int nMovimentos, vector<Linha>& solucao){
         switch (k){
             case 1:
                 melhorou = SwapInterno(maiorLinhaDeTodas(vndSolucao)); // O(p^2)
+                if (melhorou){
+                    //cout << "\tSofreu alteracao do swap INTERNO" << endl;
+                }
                 break;
             case 2:
                 melhorou = SwapExterno(vndSolucao); // O(p^3)
+                if (melhorou){
+                    //cout << "\tSofreu alteracao do swap EXTERNO" << endl;
+                }
                 break;
         }
 
@@ -411,7 +482,7 @@ int main() {
         auto duracao = chrono::duration_cast<std::chrono::nanoseconds>(fim - inicio);
         float valorDaSolucao = maiorLinhaDeTodas(solucaoGulosa).getTempoTotal();
 
-        //imprimirSolucao(solucaoGulosa);
+        imprimirSolucao(solucaoGulosa);
         cout << "\tValor da solucao encontrada: " << valorDaSolucao << endl;
         cout << "\tTempo de execucao: " << conversor(duracao) << endl;
         cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100 << endl;
@@ -425,7 +496,7 @@ int main() {
         duracao = std::chrono::duration_cast<std::chrono::nanoseconds>(fim - inicio);
         valorDaSolucao = maiorLinhaDeTodas(solucaoVND).getTempoTotal();
         
-        //imprimirSolucao(solucaoVND);
+        imprimirSolucao(solucaoVND);
         cout << "\tValor da solucao encontrada: " << valorDaSolucao << endl;
         cout << "Tempo de execucao: " << conversor(duracao) << endl;
         cout << "\tGAP: " << ((valorDaSolucao - valorOtimo) / valorOtimo) * 100.00 << endl;
